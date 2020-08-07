@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 
 const SignUp = () => {
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center' 
+    }}>
         <h1>Login</h1>
 
         <div style={{ 
@@ -44,7 +48,7 @@ const SignUp = () => {
               fontSize: '15px'
             }}
           >
-            Cadastrar
+            Logar
           </button>
         </div>
     </div>

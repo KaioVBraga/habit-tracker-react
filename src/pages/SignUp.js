@@ -6,7 +6,12 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center', 
+      justifyContent: 'center' 
+    }}>
         <h1>Cadastro</h1>
 
         <div style={{ 
