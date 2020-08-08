@@ -1,5 +1,4 @@
 import React from 'react';
-// import { Anchor } from 'react-router-dom';
 import { BaseHeader, WrapHeader } from './style/StyledComponents';
 import Anchor  from './Anchor';
 
