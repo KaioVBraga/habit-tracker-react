@@ -6,8 +6,8 @@ const Home = () => {
   return (
     <CenteredContainer>
       <Header />
-      
-      <h1>Habit Tracker</h1>
+
+      <h1 style={{ fontFamily: 'comfortaa' }}>Tracker</h1>
 
       <div 
         style={{ 

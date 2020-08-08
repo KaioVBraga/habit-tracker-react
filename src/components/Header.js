@@ -1,13 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+// import { Anchor } from 'react-router-dom';
 import { BaseHeader, WrapHeader } from './style/StyledComponents';
+import Anchor  from './Anchor';
 
 const Header = () => {
   return (
     <BaseHeader>
       <WrapHeader>
-        <h2>
-          <Link to="/">Habit Tracker</Link>
+        <h2 style={{ fontFamily: 'comfortaa' }}>
+          <Anchor to="/">Tracker</Anchor>
         </h2>
         <div
           style={{
@@ -16,11 +17,11 @@ const Header = () => {
             width: '250px'
           }}
         >
-          <h2>
-            <Link to="/signup">Cadastrar</Link>
+          <h2 style={{ fontFamily: 'roboto' }}>
+            <Anchor to="/signup">Cadastrar</Anchor>
           </h2>
-          <h2>
-            <Link to="/login">Logar</Link>
+          <h2 style={{ fontFamily: 'roboto' }}>
+            <Anchor to="/login">Logar</Anchor>
           </h2>
         </div>
       </WrapHeader>

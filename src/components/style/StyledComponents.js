@@ -20,8 +20,8 @@ export const BaseHeader = styled.div`
 
 export const WrapHeader = styled.div`
   position: relative;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
   display: flex;
   justify-content: space-between;
 `;

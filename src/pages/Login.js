@@ -11,7 +11,7 @@ const SignUp = () => {
       alignItems: 'center', 
       justifyContent: 'center' 
     }}>
-        <h1>Login</h1>
+        <h1 style={{ fontFamily: 'roboto' }}>Login</h1>
 
         <div style={{ 
           display: 'flex', 

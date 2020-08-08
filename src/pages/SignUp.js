@@ -12,7 +12,7 @@ const SignUp = () => {
       alignItems: 'center', 
       justifyContent: 'center' 
     }}>
-        <h1>Cadastro</h1>
+        <h1 style={{ fontFamily: 'roboto' }}>Cadastro</h1>
 
         <div style={{ 
           display: 'flex', 
