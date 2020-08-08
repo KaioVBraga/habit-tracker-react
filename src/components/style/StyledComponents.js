@@ -9,15 +9,19 @@ export const CenteredContainer = styled.div`
 `;
 
 export const BaseHeader = styled.div`
-  display: flex;
   height: 70px;
   width: 100%;
-  padding-left: 20px;
-  padding-right: 20px;
   position: fixed;
   left: 0;
   top: 0;
   background-color: white;
   box-shadow: 0px 0px 3px black;
+`;
+
+export const WrapHeader = styled.div`
+  position: relative;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
   justify-content: space-between;
 `;
