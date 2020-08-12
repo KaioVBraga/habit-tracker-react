@@ -19,7 +19,14 @@ const PageHeader: React.FunctionComponent<PageHeaderProps> = (props) => {
                 <Link to="/">
                     <img src={backIcon} alt="back" />
                 </Link>
-                <img src={logoIcon} alt="Proffy" />
+                <span 
+                    style={{
+                        fontFamily: 'Saira Semi Condensed',
+                        fontSize: '2rem'
+                    }}
+                >
+                    Habit Tracker
+                </span>
             </div>
 
             <div className="header-content">

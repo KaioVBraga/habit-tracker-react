@@ -5,7 +5,6 @@ import logoImg from "../../assets/images/logo.svg";
 import ladingImg from "../../assets/images/landing.svg";
 import studyIcon from "../../assets/images/icons/study.svg";
 import giveClassesIcon from "../../assets/images/icons/give-classes.svg";
-import purpleHeartIcon from "../../assets/images/icons/purple-heart.svg";
 
 import api from "../../services/api";
 
@@ -26,8 +25,13 @@ function Landing() {
         <div id="page-landing">
             <div id="page-landing-content" className="container">
                 <div className="logo-container">
-                    <img src={logoImg} alt="Proffy" />
-                    <h2>Sua plataforma de estudos online.</h2>
+                    <h1
+                        style={{
+                            fontFamily: 'Saira Semi Condensed',
+                            fontSize: '9.8rem'
+                        }}
+                    >Habit Tracker</h1>
+                    <h2>Tome o controle da sua vida.</h2>
                 </div>
 
                 <img
@@ -37,20 +41,16 @@ function Landing() {
                 />
 
                 <div className="buttons-container">
-                    <Link to="/study" className="study">
+                    <Link to="/signin" className="study">
                         <img src={studyIcon} alt="Study" />
-                        Estudar
+                        Logar
                     </Link>
 
-                    <Link to="/give-classes" className="give-classes">
+                    <Link to="/signup" className="give-classes">
                         <img src={giveClassesIcon} alt="Give Lessons" />
-                        Ensinar
+                        Cadastrar
                     </Link>
                 </div>
-                <span className="total-connections">
-                    Total de {totalConnections} conexões já realizadas
-                    <img src={purpleHeartIcon} alt="Purple Heart" />
-                </span>
             </div>
         </div>
     );
