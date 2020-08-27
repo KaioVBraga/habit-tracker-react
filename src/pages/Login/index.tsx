@@ -14,58 +14,63 @@ function Login() {
     const history = useHistory();
 
     const [name, setName] = useState("");
-    const [avatar, setAvatar] = useState("");
-    const [whatsapp, setWhatsapp] = useState("");
-    const [bio, setBio] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    // const [bio, setBio] = useState("");
 
-    const [subject, setSubject] = useState("");
-    const [cost, setCost] = useState("");
+    // const [subject, setSubject] = useState("");
+    // const [cost, setCost] = useState("");
 
-    const [scheduleItems, setScheduleItems] = useState([
-        { week_day: 0, from: "", to: "" },
-    ]);
+    // const [scheduleItems, setScheduleItems] = useState([
+    //     { week_day: 0, from: "", to: "" },
+    // ]);
 
-    function addNewScheduleItem() {
-        setScheduleItems([...scheduleItems, { week_day: 0, from: "", to: "" }]);
-    }
+    // function addNewScheduleItem() {
+    //     setScheduleItems([...scheduleItems, { week_day: 0, from: "", to: "" }]);
+    // }
 
-    function setScheduleItemValue(
-        position: number,
-        field: string,
-        value: string
-    ) {
-        const updatedScheduleItems = scheduleItems.map(
-            (scheduleItem, index) => {
-                if (index === position) {
-                    return { ...scheduleItem, [field]: value };
-                }
+    // function setScheduleItemValue(
+    //     position: number,
+    //     field: string,
+    //     value: string
+    // ) {
+    //     const updatedScheduleItems = scheduleItems.map(
+    //         (scheduleItem, index) => {
+    //             if (index === position) {
+    //                 return { ...scheduleItem, [field]: value };
+    //             }
 
-                return scheduleItem;
-            }
-        );
+    //             return scheduleItem;
+    //         }
+    //     );
 
-        setScheduleItems(updatedScheduleItems);
-    }
+    //     setScheduleItems(updatedScheduleItems);
+    // }
 
     function handleCreateClass(e: FormEvent) {
         e.preventDefault();
 
-        api.post("classes", {
-            name,
-            avatar,
-            whatsapp,
-            bio,
-            subject,
-            cost: Number(cost),
-            schedule: scheduleItems,
-        })
-            .then(() => {
-                alert("Agora você é um proffy!");
-                history.push("/");
-            })
-            .catch(() => {
-                alert("Error");
-            });
+        // api.post("classes", {
+        //     name,
+        //     avatar,
+        //     whatsapp,
+        //     bio,
+        //     subject,
+        //     cost: Number(cost),
+        //     schedule: scheduleItems,
+        // })
+        //     .then(() => {
+        //         alert("Agora você é um proffy!");
+        //         history.push("/");
+        //     })
+        //     .catch(() => {
+        //         alert("Error");
+        //     });
+
+        localStorage.setItem('name', name);
+        localStorage.setItem('email', email);
+
+        history.push('/profile');
     }
 
     return (
@@ -91,17 +96,18 @@ function Login() {
                         <Input
                             name="email"
                             label="Email"
-                            value={avatar}
+                            value={email}
                             onChange={(e) => {
-                                setAvatar(e.target.value);
+                                setEmail(e.target.value);
                             }}
                         />
                         <Input
                             name="password"
                             label="Senha"
-                            value={whatsapp}
+                            type="password"
+                            value={password}
                             onChange={(e) => {
-                                setWhatsapp(e.target.value);
+                                setPassword(e.target.value);
                             }}
                         />
                     </fieldset>

@@ -50,22 +50,24 @@ function Register() {
     function handleCreateClass(e: FormEvent) {
         e.preventDefault();
 
-        api.post("classes", {
-            name,
-            avatar,
-            whatsapp,
-            bio,
-            subject,
-            cost: Number(cost),
-            schedule: scheduleItems,
-        })
-            .then(() => {
-                alert("Agora você é um proffy!");
-                history.push("/");
-            })
-            .catch(() => {
-                alert("Error");
-            });
+        // api.post("classes", {
+        //     name,
+        //     avatar,
+        //     whatsapp,
+        //     bio,
+        //     subject,
+        //     cost: Number(cost),
+        //     schedule: scheduleItems,
+        // })
+        //     .then(() => {
+        //         alert("Agora você é um proffy!");
+        //         history.push("/");
+        //     })
+        //     .catch(() => {
+        //         alert("Error");
+        //     });
+
+        history.push('/profile');
     }
 
     return (
@@ -75,7 +77,7 @@ function Register() {
                 description="O primeiro passo é preencher este formulário de incrição."
             />
 
-<main>
+            <main>
                 <form onSubmit={handleCreateClass}>
                     <fieldset>
                         <legend>Seus dados</legend>
@@ -99,6 +101,7 @@ function Register() {
                         <Input
                             name="password"
                             label="Senha"
+                            type="password"
                             value={whatsapp}
                             onChange={(e) => {
                                 setWhatsapp(e.target.value);
