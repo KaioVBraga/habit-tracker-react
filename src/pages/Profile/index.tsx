@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import PageHeader from "../../components/PageHeader";
 import Input from "../../components/Input";
 import Textarea from "../../components/Textarea";
@@ -10,63 +10,45 @@ import warningIcon from "../../assets/images/icons/warning.svg";
 
 import "./styles.css";
 
+interface Goal {
+    id: Number,
+    title: String,
+    type: String,
+    active: Number,
+    description: String,
+    user_id: Number,
+    reward: String,
+    createdAt: String,
+    updatedAt: String
+};
+
+interface Goals extends Array<Goal>{};
+
 function Profile() {
     const history = useHistory();
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [goals, setGoals] = useState<Goals>([]);
 
-    const [name, setName] = useState(localStorage.getItem('name'));
-    const [email, setEmail] = useState(localStorage.getItem('email'));
+    useEffect(() => {
+        const getProfile = async (id:Number) => {
+            try {
+                const response = await api.get(`users/${id}`);
 
-    console.log(name);
+                setGoals(response.data.goals);
+            } catch (err) {
+                console.log(err);
+            }
+        }
 
-    // const [subject, setSubject] = useState("");
-    // const [cost, setCost] = useState("");
+        const habit_user = localStorage.getItem('habit_user') as string;
+        const user = JSON.parse(habit_user)
 
-    // const [scheduleItems, setScheduleItems] = useState([
-    //     { week_day: 0, from: "", to: "" },
-    // ]);
+        setName(user.name);
+        setEmail(user.email);
 
-    // function addNewScheduleItem() {
-    //     setScheduleItems([...scheduleItems, { week_day: 0, from: "", to: "" }]);
-    // }
-
-    // function setScheduleItemValue(
-    //     position: number,
-    //     field: string,
-    //     value: string
-    // ) {
-    //     const updatedScheduleItems = scheduleItems.map(
-    //         (scheduleItem, index) => {
-    //             if (index === position) {
-    //                 return { ...scheduleItem, [field]: value };
-    //             }
-
-    //             return scheduleItem;
-    //         }
-    //     );
-
-    //     setScheduleItems(updatedScheduleItems);
-    // }
-
-    function handleCreateClass(e: FormEvent) {
-        e.preventDefault();
-
-        // api.post("classes", {
-        //     name,
-        //     avatar,
-        //     whatsapp,
-        //     bio,
-        //     subject,
-        //     cost: Number(cost),
-        //     schedule: scheduleItems,
-        // })
-        //     .then(() => {
-        //         alert("Agora você é um proffy!");
-        //         history.push("/");
-        //     })
-        //     .catch(() => {
-        //         alert("Error");
-        //     });
-    }
+        getProfile(user.id);
+    }, []);
 
     return (
         <div style={{ position: 'absolute', top: 0, left:0 }}>
@@ -88,7 +70,7 @@ function Profile() {
                     Habit Tracker
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    Ola, Kaio Vinycius !
+                    Ola, {name} !
                     <div style={{ width: '2.5vw', height: '2.5vw', marginLeft: '20px', borderRadius: '50%', backgroundColor: 'gray' }}> 
                     </div>
                 </div>
@@ -103,6 +85,17 @@ function Profile() {
                         }}
                     >
                         Seus hábitos
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        {
+                            goals.map( goal => {
+                                return(
+                                    <div style={{ fontSize: '1.2rem', width: '18rem' }}>
+                                        {goal.title}
+                                    </div>
+                                );
+                            })
+                        }
                     </div>
                 </div>
                 <div style={{ backgroundColor: 'white', height: '90vh', width: '80vw' }}>

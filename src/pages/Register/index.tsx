@@ -1,73 +1,46 @@
 import React, { useState, FormEvent } from "react";
 import PageHeader from "../../components/PageHeader";
 import Input from "../../components/Input";
-import Textarea from "../../components/Textarea";
-import Select from "../../components/Select";
 import api from "../../services/api";
 import { useHistory } from "react-router-dom";
+import swal from 'sweetalert';
 
 import warningIcon from "../../assets/images/icons/warning.svg";
 
 import "./styles.css";
 
-function Register() {
+const Register = () => {
     const history = useHistory();
 
     const [name, setName] = useState("");
-    const [avatar, setAvatar] = useState("");
-    const [whatsapp, setWhatsapp] = useState("");
-    const [bio, setBio] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const [subject, setSubject] = useState("");
-    const [cost, setCost] = useState("");
-
-    const [scheduleItems, setScheduleItems] = useState([
-        { week_day: 0, from: "", to: "" },
-    ]);
-
-    function addNewScheduleItem() {
-        setScheduleItems([...scheduleItems, { week_day: 0, from: "", to: "" }]);
-    }
-
-    function setScheduleItemValue(
-        position: number,
-        field: string,
-        value: string
-    ) {
-        const updatedScheduleItems = scheduleItems.map(
-            (scheduleItem, index) => {
-                if (index === position) {
-                    return { ...scheduleItem, [field]: value };
-                }
-
-                return scheduleItem;
-            }
-        );
-
-        setScheduleItems(updatedScheduleItems);
-    }
-
-    function handleCreateClass(e: FormEvent) {
+    const handleCreateUser = async (e: FormEvent) => {
         e.preventDefault();
+ 
+        try {
+            const response = await api.post('session/register', {
+                name,
+                email,
+                password,
+            });
 
-        // api.post("classes", {
-        //     name,
-        //     avatar,
-        //     whatsapp,
-        //     bio,
-        //     subject,
-        //     cost: Number(cost),
-        //     schedule: scheduleItems,
-        // })
-        //     .then(() => {
-        //         alert("Agora você é um proffy!");
-        //         history.push("/");
-        //     })
-        //     .catch(() => {
-        //         alert("Error");
-        //     });
+            localStorage.setItem('habit_user', JSON.stringify(response.data));
+            history.push('/profile');
+        } catch(err) {
+            if(err.response.status === 409) {
+                swal('Email já cadastrado !', 'Por favor, insira outro email.', 'error');
+                return;
+            }
 
-        history.push('/profile');
+            if(err.response.status === 404) {
+                swal('Erro no formulário !', 'Por favor, reveja os campos.', 'error');
+                return;
+            }
+        }
+
+        // history.push('/profile');
     }
 
     return (
@@ -78,7 +51,7 @@ function Register() {
             />
 
             <main>
-                <form onSubmit={handleCreateClass}>
+                <form onSubmit={handleCreateUser}>
                     <fieldset>
                         <legend>Seus dados</legend>
 
@@ -86,26 +59,20 @@ function Register() {
                             name="name"
                             label="Nome completo"
                             value={name}
-                            onChange={(e) => {
-                                setName(e.target.value);
-                            }}
+                            onChange={(e) => setName(e.target.value)}
                         />
                         <Input
                             name="email"
                             label="Email"
-                            value={avatar}
-                            onChange={(e) => {
-                                setAvatar(e.target.value);
-                            }}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                         <Input
                             name="password"
                             label="Senha"
                             type="password"
-                            value={whatsapp}
-                            onChange={(e) => {
-                                setWhatsapp(e.target.value);
-                            }}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                     </fieldset>
 
