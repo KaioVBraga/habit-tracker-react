@@ -20,27 +20,23 @@ const Register = () => {
         e.preventDefault();
  
         try {
-            const response = await api.post('session/register', {
+            const response = (await api.post('session/register', {
                 name,
                 email,
                 password,
-            });
+            })).data;
 
-            localStorage.setItem('habit_user', JSON.stringify(response.data));
+            localStorage.setItem('habit_user', JSON.stringify(response));
             history.push('/profile');
         } catch(err) {
             if(err.response.status === 409) {
                 swal('Email já cadastrado !', 'Por favor, insira outro email.', 'error');
-                return;
             }
 
             if(err.response.status === 404) {
                 swal('Erro no formulário !', 'Por favor, reveja os campos.', 'error');
-                return;
             }
         }
-
-        // history.push('/profile');
     }
 
     return (

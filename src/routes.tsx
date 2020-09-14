@@ -8,7 +8,7 @@ import Profile from './pages/Profile';
 function Routes() {
     return (
         <BrowserRouter>
-            <Route path="/" exact component={Landing}/>
+            <Route path="/" exact component={!localStorage.getItem('habit_user') ? Landing : Profile}/>
             <Route path="/signin" component={Login}/>
             <Route path="/signup" component={Register}/>
             <Route path="/profile" component={Profile}/>

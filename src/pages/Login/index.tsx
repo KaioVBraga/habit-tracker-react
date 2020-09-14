@@ -1,8 +1,6 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState, useCallback, FormEvent } from "react";
 import PageHeader from "../../components/PageHeader";
 import Input from "../../components/Input";
-import Textarea from "../../components/Textarea";
-import Select from "../../components/Select";
 import api from "../../services/api";
 import { useHistory } from "react-router-dom";
 
@@ -13,65 +11,21 @@ import "./styles.css";
 function Login() {
     const history = useHistory();
 
-    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    // const [bio, setBio] = useState("");
 
-    // const [subject, setSubject] = useState("");
-    // const [cost, setCost] = useState("");
-
-    // const [scheduleItems, setScheduleItems] = useState([
-    //     { week_day: 0, from: "", to: "" },
-    // ]);
-
-    // function addNewScheduleItem() {
-    //     setScheduleItems([...scheduleItems, { week_day: 0, from: "", to: "" }]);
-    // }
-
-    // function setScheduleItemValue(
-    //     position: number,
-    //     field: string,
-    //     value: string
-    // ) {
-    //     const updatedScheduleItems = scheduleItems.map(
-    //         (scheduleItem, index) => {
-    //             if (index === position) {
-    //                 return { ...scheduleItem, [field]: value };
-    //             }
-
-    //             return scheduleItem;
-    //         }
-    //     );
-
-    //     setScheduleItems(updatedScheduleItems);
-    // }
-
-    function handleCreateClass(e: FormEvent) {
+    const handleCreateClass = useCallback(async (e: FormEvent) => {
         e.preventDefault();
 
-        // api.post("classes", {
-        //     name,
-        //     avatar,
-        //     whatsapp,
-        //     bio,
-        //     subject,
-        //     cost: Number(cost),
-        //     schedule: scheduleItems,
-        // })
-        //     .then(() => {
-        //         alert("Agora você é um proffy!");
-        //         history.push("/");
-        //     })
-        //     .catch(() => {
-        //         alert("Error");
-        //     });
-
-        localStorage.setItem('name', name);
-        localStorage.setItem('email', email);
-
-        history.push('/profile');
-    }
+        try {
+            const response = (await api.post('session/login', { email, password })).data;
+            localStorage.setItem('habit_user', JSON.stringify(response));
+            
+            history.push('/profile');
+        } catch(err) {
+            console.log(err.response);
+        }
+    }, [email, history, password]);
 
     return (
         <div id="page-teacher-form" className="container">
@@ -85,14 +39,6 @@ function Login() {
                     <fieldset>
                         <legend>Seus dados</legend>
 
-                        <Input
-                            name="name"
-                            label="Nome completo"
-                            value={name}
-                            onChange={(e) => {
-                                setName(e.target.value);
-                            }}
-                        />
                         <Input
                             name="email"
                             label="Email"
