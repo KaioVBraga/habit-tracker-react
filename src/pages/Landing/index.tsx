@@ -5,7 +5,6 @@ import ladingImg from "../../assets/images/landing.svg";
 import studyIcon from "../../assets/images/icons/study.svg";
 import giveClassesIcon from "../../assets/images/icons/give-classes.svg";
 
-import "./styles.css";
 import { Container, Content, LogoContainer, HeroImage, ButtonsContainer } from './styles';
 
 const Landing:React.FC = () => {
