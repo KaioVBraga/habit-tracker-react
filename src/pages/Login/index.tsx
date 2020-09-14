@@ -8,7 +8,7 @@ import warningIcon from "../../assets/images/icons/warning.svg";
 
 import "./styles.css";
 
-function Login() {
+const Login:React.FC = () => {
     const history = useHistory();
 
     const [email, setEmail] = useState("");

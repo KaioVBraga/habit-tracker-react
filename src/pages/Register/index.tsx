@@ -9,7 +9,7 @@ import warningIcon from "../../assets/images/icons/warning.svg";
 
 import "./styles.css";
 
-const Register = () => {
+const Register:React.FC = () => {
     const history = useHistory();
 
     const [name, setName] = useState("");
