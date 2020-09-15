@@ -1,14 +1,10 @@
 import React, { useState, useEffect, FormEvent } from "react";
-import PageHeader from "../../components/PageHeader";
-import Input from "../../components/Input";
-import Textarea from "../../components/Textarea";
-import Select from "../../components/Select";
 import api from "../../services/api";
 import { useHistory } from "react-router-dom";
 
 import warningIcon from "../../assets/images/icons/warning.svg";
 
-import "./styles.css";
+import { Container } from './styles';
 
 interface Goal {
     id: Number,
@@ -24,7 +20,7 @@ interface Goal {
 
 interface Goals extends Array<Goal>{};
 
-function Profile() {
+const Profile:React.FC = () => {
     const history = useHistory();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -51,68 +47,47 @@ function Profile() {
     }, []);
 
     return (
-        <div style={{ position: 'absolute', top: 0, left:0 }}>
-            <div 
-                style={{ 
-                    backgroundColor: '#8257e5',
-                    color: 'white', 
-                    height: '10vh', 
-                    width: '100vw',
-                    paddingLeft: '2vw',
-                    paddingRight: '2vw',
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
-                }}
-            >
-                <div style={{ fontFamily: 'Saira Semi Condensed', fontSize: '32px' }}>
+        <Container>
+            <header>
+                <h1>
                     Habit Tracker
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                </h1>
+                <div>
                     Ola, {name} !
-                    <div style={{ width: '2.5vw', height: '2.5vw', marginLeft: '20px', borderRadius: '50%', backgroundColor: 'gray' }}> 
+                    <div> 
                     </div>
                 </div>
-            </div>
-            <div style={{ display: 'flex' }}>
-                <div style={{ backgroundColor: '#cccccc', height: '90vh', width: '20vw' }}>
-                    <div
-                        style={{
-                            fontSize: '32px',
-                            display: 'flex',
-                            justifyContent: 'center'
-                        }}
-                    >
-                        Seus hábitos
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            </header>
+            <div>
+                <aside>
+                    <h2>Seus hábitos</h2>
+                    <ul>
                         {
                             goals.map( goal => {
                                 return(
-                                    <div style={{ fontSize: '1.2rem', width: '18rem' }}>
+                                    <li>
                                         {goal.title}
-                                    </div>
+                                    </li>
                                 );
                             })
                         }
-                    </div>
-                </div>
-                <div style={{ backgroundColor: 'white', height: '90vh', width: '80vw' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', fontSize: '24px', backgroundColor: '#a689ea', height: '10%', width: '80vw' }}>
-                        <div>
+                    </ul>
+                </aside>
+                <section>
+                    <ul>
+                        <li>
                             Tracker
-                        </div>
-                        <div>
+                        </li>
+                        <li>
                             Estatísticas
-                        </div>
-                    </div>
-                    <div style={{ backgroundColor: 'white', height: '90%', width: '80vw' }}>
+                        </li>
+                    </ul>
+                    <div>
                         ALGUM CALENDÁRIO
                     </div>
-                </div>
+                </section>
             </div>
-        </div>
+        </Container>
     );
 }
 

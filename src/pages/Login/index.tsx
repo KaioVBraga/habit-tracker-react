@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 
 import warningIcon from "../../assets/images/icons/warning.svg";
 
-import "./styles.css";
+import { Container } from './styles';
 
 const Login:React.FC = () => {
     const history = useHistory();
@@ -28,7 +28,7 @@ const Login:React.FC = () => {
     }, [email, history, password]);
 
     return (
-        <div id="page-teacher-form" className="container">
+        <Container>
             <PageHeader
                 title="Retome o controle!"
                 description="Logue e veja o andamento dos seus hábitos."
@@ -68,7 +68,7 @@ const Login:React.FC = () => {
                     </footer>
                 </form>
             </main>
-        </div>
+        </Container>
     );
 }
 

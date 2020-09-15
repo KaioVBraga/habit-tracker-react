@@ -7,7 +7,7 @@ import swal from 'sweetalert';
 
 import warningIcon from "../../assets/images/icons/warning.svg";
 
-import "./styles.css";
+import { Container } from './styles';
 
 const Register:React.FC = () => {
     const history = useHistory();
@@ -40,7 +40,7 @@ const Register:React.FC = () => {
     }
 
     return (
-        <div id="page-teacher-form" className="container">
+        <Container>
             <PageHeader
                 title="Seja o mestre do seu destino!"
                 description="O primeiro passo é preencher este formulário de incrição."
@@ -82,7 +82,7 @@ const Register:React.FC = () => {
                     </footer>
                 </form>
             </main>
-        </div>
+        </Container>
     );
 }
 
