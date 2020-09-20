@@ -3,8 +3,9 @@ import api from "../../services/api";
 import { useHistory } from "react-router-dom";
 
 import warningIcon from "../../assets/images/icons/warning.svg";
-
+import Calendar from '../../components/Calendar';
 import { Container } from './styles';
+import Statistics from "../../components/Statistics";
 
 interface Goal {
     id: Number,
@@ -53,7 +54,7 @@ const Profile:React.FC = () => {
                     Habit Tracker
                 </h1>
                 <div>
-                    Ola, {name} !
+                    Olá, {name} !
                     <div> 
                     </div>
                 </div>
@@ -83,7 +84,8 @@ const Profile:React.FC = () => {
                         </li>
                     </ul>
                     <div>
-                        ALGUM CALENDÁRIO
+                        <Calendar />
+                        <Statistics /> 
                     </div>
                 </section>
             </div>

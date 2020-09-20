@@ -2,14 +2,13 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
     position: relative;
-    width: 100vw;
-    height: 100%;
+    width: 100%;
 
     & > header {
         background-color: #8257e5;
         color: white; 
-        height: 10vh; 
-        width: 100vw;
+        height: 7rem; 
+        width: 100%;
         padding-left: 2vw;
         padding-right: 2vw;
         display: flex;
@@ -42,8 +41,8 @@ export const Container = styled.div`
 
         & > aside {
             background-color: #cccccc; 
-            height: 90vh; 
             width: 20vw;
+            padding-top: 1rem;
 
             & > h2 {
                 font-size: 32px;
@@ -55,6 +54,7 @@ export const Container = styled.div`
                 display: flex; 
                 justify-content: center;
                 align-items: center;
+                list-style: none;
 
                 & > li {
                     font-size: 1.2rem;
@@ -65,7 +65,6 @@ export const Container = styled.div`
 
         & > section {
             background-color: white; 
-            height: 90vh;
             width: 80vw;
 
             & > ul {
@@ -74,14 +73,22 @@ export const Container = styled.div`
                 align-items: center; 
                 font-size: 24px; 
                 background-color: #a689ea; 
-                height: 10%; 
-                width: 80vw;
+                height: 7rem; 
+                width: 100%;
+                list-style: none;
             }
 
             & > div {
                 background-color: white; 
-                height: 90%; 
-                width: 80vw;
+                /* height: 90%;  */
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                /* & > * {
+                    margin-top: 16px;
+                } */
             }
         }
     }

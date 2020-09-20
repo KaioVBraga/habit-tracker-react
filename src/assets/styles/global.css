@@ -30,17 +30,11 @@
 html,
 body,
 #root {
-    height: 100vh;
+    min-height: 100vh;
 }
 
 body {
     background: var(--color-background);
-}
-
-#root {
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 body,
@@ -53,11 +47,6 @@ textarea {
 
 button{
     outline: none;
-}
-
-.container {
-    width: 90vw;
-    max-width: 700px;
 }
 
 @media (min-width: 700px) {
