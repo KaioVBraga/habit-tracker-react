@@ -44,7 +44,6 @@ export const CalendarItem = styled.div<CalendarItemProps>`
     cursor: pointer;
     transition: all 0.15s ease-in-out;
     display: flex;
-    align-items: center;
     justify-content: center;
     font-size: 20px;
 
