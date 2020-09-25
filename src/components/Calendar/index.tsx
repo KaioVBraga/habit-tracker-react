@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";    
-import { Container, CalendarContainer } from "./styles";
+import { Container, CalendarContainer, CalendarItem, IconLeft, IconRight } from "./styles";
 
 const Calendar: React.FC = () => {
     const [days, setDays] = useState(Array(35).fill(0));
@@ -44,30 +44,34 @@ const Calendar: React.FC = () => {
 
     return (
         <Container>
-            <h2>{ months[date.getMonth()].name }</h2>
-            <ul>
-                <li>Sun</li>
-                <li>Mon</li>
-                <li>Tue</li>
-                <li>Wed</li>
-                <li>Thu</li>
-                <li>Fri</li>
-                <li>Sat</li>
-            </ul>
-            <CalendarContainer>
-                {
-                    days.map((value, index) =>{
-                        return(
-                            <div 
-                                style={{ backgroundColor: days[index].value ===  1 ? '#68ce68' : '' }}
-                                onClick={() => handleDays(index)}
-                            >
-                                {value.position}
-                            </div>
-                        )
-                    })
-                }
-            </CalendarContainer>
+            <IconLeft />
+            <section>
+                <h2>{ months[date.getMonth()].name }</h2>
+                <ul>
+                    <li>Sun</li>
+                    <li>Mon</li>
+                    <li>Tue</li>
+                    <li>Wed</li>
+                    <li>Thu</li>
+                    <li>Fri</li>
+                    <li>Sat</li>
+                </ul>
+                <CalendarContainer>
+                    {
+                        days.map((value, index) =>{
+                            return(
+                                <CalendarItem
+                                    value={days[index].value}
+                                    onClick={() => handleDays(index)}
+                                >
+                                    {value.position}
+                                </CalendarItem>
+                            )
+                        })
+                    }
+                </CalendarContainer>
+            </section>
+            <IconRight />
         </Container>
     );
 };
