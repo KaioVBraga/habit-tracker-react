@@ -6,6 +6,7 @@ export const Container = styled.div`
     margin-bottom: 40vh;
     display: flex;
     align-items: center;
+    justify-content: center;
 
     & > section {
         & > h2 {
@@ -33,22 +34,40 @@ export const CalendarContainer = styled.div`
 
 interface CalendarItemProps {
     value?: number;
+    inMonth?: boolean;
 }
 
 export const CalendarItem = styled.div<CalendarItemProps>`
     width: 100%;
     height: 100%;
     padding: 2.5rem;
-    background-color:  ${ props => props.value ===  1 ? '#68ce68' : '#dfdfdf'};
-    color:  ${ props => props.value ===  1 && '#ffffff'};
-    cursor: pointer;
+    background-color:  ${ props => {
+        if(!props.inMonth) {
+            return '#cacaca';
+        }
+        
+        if(props.value ===  1) {
+            return '#68ce68';
+        }
+        return '#dfdfdf'
+    }};
+    color:  ${ props => {
+        if(!props.inMonth) {
+            return '#999999';
+        }
+
+        if(props.value ===  1){ 
+            return('#ffffff')
+        }
+    }};
+    cursor: ${ props => props.inMonth ? 'pointer' : 'default'};
     transition: all 0.15s ease-in-out;
     display: flex;
     justify-content: center;
     font-size: 20px;
 
     &:hover {
-        background-color: #bababa;
+        background-color: ${ props => props.inMonth && '#bababa' };
     }
 `;
 

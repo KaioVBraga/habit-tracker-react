@@ -1,9 +1,12 @@
-import React, { useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import Modal from 'react-modal';
 import api from "../../services/api";
 import { useHistory } from "react-router-dom";
 
 import warningIcon from "../../assets/images/icons/warning.svg";
 import Calendar from '../../components/Calendar';
+import GoalTypeSelector from '../../components/GoalTypeSelector';
+import GoalRegister from '../../components/GoalRegister';
 import { Container } from './styles';
 import Statistics from "../../components/Statistics";
 
@@ -26,6 +29,9 @@ const Profile:React.FC = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [goals, setGoals] = useState<Goals>([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [registerPhase, setRegisterPhase] = useState('category');
+    const [category, setCategory] = useState('');
 
     useEffect(() => {
         const getProfile = async (id:Number) => {
@@ -47,6 +53,15 @@ const Profile:React.FC = () => {
         getProfile(user.id);
     }, []);
 
+    const handleCategory = useCallback((category:string) => {
+        setCategory(category);
+        setRegisterPhase('goal');
+    }, []);
+
+    const handleGoal = useCallback((goal) => {
+        console.log(goal);
+    },[]);
+
     return (
         <Container>
             <header>
@@ -61,7 +76,7 @@ const Profile:React.FC = () => {
             </header>
             <div>
                 <aside>
-                    <h2>Seus hábitos</h2>
+                    <button onClick={() => setIsModalOpen(true)}>Cadastrar Meta</button>
                     <ul>
                         {
                             goals.map( goal => {
@@ -73,6 +88,28 @@ const Profile:React.FC = () => {
                             })
                         }
                     </ul>
+
+                    <Modal
+                        isOpen={isModalOpen}
+                        onRequestClose={() => setIsModalOpen(false)}
+                        style={{
+                            overlay: {
+                              backgroundColor: 'rgba(0,0,0,.87)'
+                            },
+                            content: {
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center'
+                            }
+                          }}
+                    >
+                        {
+                            registerPhase === 'category' && <GoalTypeSelector handleCategory={handleCategory} />
+                        }
+                        {
+                            registerPhase === 'goal' && <GoalRegister handleGoal={handleGoal} />
+                        }
+                    </Modal>
                 </aside>
                 <section>
                     <ul>

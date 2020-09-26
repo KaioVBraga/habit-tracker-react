@@ -37,9 +37,14 @@ const Calendar: React.FC = () => {
         const previousMonth = Array(months[monthSum(actualCalendar, -1)].count).fill(null).map((something, index) => index+1).map(position => ({ position, value: 0, inMonth: false }));
         const actualMonth = Array(months[actualCalendar.getMonth()].count).fill(null).map((something, index) => index+1).map(position => ({ position, value: 0, inMonth: true }));
         const postMonth = Array(months[monthSum(actualCalendar, 1)].count).fill(null).map((something, index) => index+1).map(position => ({ position, value: 0, inMonth: false }));
+        
+        const previousMonthStart = previousMonth.length-firstOfMonth;
+        const previousMonthEnd = firstOfMonth % 7 && previousMonth.length;
+        const previousMonthSlice = previousMonth.slice(previousMonthStart, previousMonthEnd);
 
-        const previousMonthSlice = previousMonth.slice(previousMonth.length-firstOfMonth, previousMonth.length);
-        const postMonthSlice = postMonth.slice(0, 7-((firstOfMonth+previousMonth.length)%7) + 1);
+        const postMonthStart = 0;
+        const postMonthSliceEnd = 42 - (actualMonth.length + previousMonthSlice.length)
+        const postMonthSlice = postMonth.slice(postMonthStart, postMonthSliceEnd);
 
         setDays(previousMonthSlice.concat(actualMonth).concat(postMonthSlice))
 
@@ -77,13 +82,14 @@ const Calendar: React.FC = () => {
                 </ul>
                 <CalendarContainer>
                     {
-                        days.map((value, index) =>{
+                        days.map((day, index) =>{
                             return(
                                 <CalendarItem
-                                    value={days[index].value}
+                                    value={day.value}
+                                    inMonth={day.inMonth}
                                     onClick={() => handleDays(index)}
                                 >
-                                    {value.position}
+                                    {day.position}
                                 </CalendarItem>
                             )
                         })

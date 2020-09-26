@@ -43,11 +43,28 @@ export const Container = styled.div`
             background-color: #cccccc; 
             width: 20vw;
             padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
 
             & > h2 {
                 font-size: 32px;
                 display: flex;
-                justify-content: center
+            }
+
+            & > button {
+                width: 80%;
+                margin: 0.5rem 0 0 0;
+                padding: 1rem;
+                background-color: #a689ea;
+                color: #fff;
+                border: none;
+                cursor: pointer;
+                transition: all 0.15s ease-in-out;
+
+                &:hover {
+                    background-color: #8257e5;
+                }
             }
 
             & > ul {
@@ -73,6 +90,7 @@ export const Container = styled.div`
                 align-items: center; 
                 font-size: 24px; 
                 background-color: #a689ea; 
+                color: #fff;
                 height: 7rem; 
                 width: 100%;
                 list-style: none;
