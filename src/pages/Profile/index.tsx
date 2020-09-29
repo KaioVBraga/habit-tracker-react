@@ -7,6 +7,7 @@ import warningIcon from "../../assets/images/icons/warning.svg";
 import Calendar from '../../components/Calendar';
 import GoalTypeSelector from '../../components/GoalTypeSelector';
 import GoalRegister from '../../components/GoalRegister';
+import HabitsRegister from '../../components/HabitsRegister';
 import { Container } from './styles';
 import Statistics from "../../components/Statistics";
 
@@ -32,6 +33,7 @@ const Profile:React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [registerPhase, setRegisterPhase] = useState('category');
     const [category, setCategory] = useState('');
+    const [goal, setGoal] = useState({});
 
     useEffect(() => {
         const getProfile = async (id:Number) => {
@@ -58,9 +60,33 @@ const Profile:React.FC = () => {
         setRegisterPhase('goal');
     }, []);
 
-    const handleGoal = useCallback((goal) => {
-        console.log(goal);
-    },[]);
+    const handleGoal = useCallback(async (goal) => {
+        
+        const habit_user = localStorage.getItem('habit_user') as string;
+        const user = JSON.parse(habit_user);
+
+        await api.post(`users/${user.id}/goals`, { ...goal, type: category, active: 1 })
+            .then( res => {
+                const newGoals = [...goals];
+                newGoals.push(res.data);
+                setGoals(newGoals);
+            }); 
+        
+        setGoal({ ...goal, type: category, active: 1 });
+        setRegisterPhase('habits');
+    },[goals, category]);
+
+    const scrollTo = (className: string) => {
+        const scrollY = window?.scrollY;
+        const classRectTop = document?.querySelector(className)?.getBoundingClientRect()?.top || 0;
+        
+        const y = classRectTop + scrollY;
+
+        window.scroll({
+            top: y - 100,
+            behavior: 'smooth'
+        });
+    }
 
     return (
         <Container>
@@ -109,20 +135,23 @@ const Profile:React.FC = () => {
                         {
                             registerPhase === 'goal' && <GoalRegister handleGoal={handleGoal} />
                         }
+                        {
+                            registerPhase === 'habits' && <HabitsRegister handleGoal={handleGoal} />
+                        }
                     </Modal>
                 </aside>
                 <section>
                     <ul>
-                        <li>
+                        <li onClick={() => scrollTo('.calendar')}>
                             Tracker
                         </li>
-                        <li>
+                        <li onClick={() => scrollTo('.statistics')}>
                             Estatísticas
                         </li>
                     </ul>
                     <div>
-                        <Calendar />
-                        <Statistics /> 
+                        <Calendar className="calendar" />
+                        <Statistics className="statistics"/> 
                     </div>
                 </section>
             </div>

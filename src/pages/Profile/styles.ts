@@ -59,6 +59,7 @@ export const Container = styled.div`
                 background-color: #a689ea;
                 color: #fff;
                 border: none;
+                border-radius: 0.5rem;
                 cursor: pointer;
                 transition: all 0.15s ease-in-out;
 
@@ -68,14 +69,27 @@ export const Container = styled.div`
             }
 
             & > ul {
+                width: 80%;
+                margin-top: 2.5rem;
                 display: flex; 
+                flex-direction: column;
                 justify-content: center;
                 align-items: center;
                 list-style: none;
 
                 & > li {
-                    font-size: 1.2rem;
-                    width: 18rem;
+                    font-size: 1.5rem;
+                    width: 100%;
+                    cursor: pointer;
+                    user-select: none;
+                    padding: 1rem;
+
+                    border-bottom: 1px solid #bbb;
+
+                    &:hover {
+                        color: #fff;
+                        background-color: #686868;
+                    }
                 }
             }
         }
@@ -89,11 +103,25 @@ export const Container = styled.div`
                 justify-content: space-around; 
                 align-items: center; 
                 font-size: 24px; 
-                background-color: #a689ea; 
                 color: #fff;
                 height: 7rem; 
                 width: 100%;
                 list-style: none;
+
+                & > li {
+                    background-color: #a689ea;
+                    height: 100%;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    transition: all 0.15s ease-in-out;
+
+                    &:hover {
+                        background-color: #8257e5;
+                    }
+                }
             }
 
             & > div {

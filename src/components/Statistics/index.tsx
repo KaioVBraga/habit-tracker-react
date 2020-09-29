@@ -2,9 +2,13 @@ import React, { InputHTMLAttributes } from "react";
 
 import { Container, Bar } from "./styles";
 
-const Statistics: React.FC = () => {
+interface Props {
+    className?: string;
+}
+
+const Statistics: React.FC<Props> = props => {
     return (
-        <Container>
+        <Container className={props.className}>
             <Bar percentage={100} />
             <Bar percentage={70} />
             <Bar percentage={30} />

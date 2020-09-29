@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";    
 import { Container, CalendarContainer, CalendarItem, IconLeft, IconRight } from "./styles";
 
-const Calendar: React.FC = () => {
+interface Props {
+    className?: string;
+}
+
+const Calendar: React.FC<Props> = props => {
     const [days, setDays] = useState(Array(35).fill(0));
     const calendario = ['Janeiro', 'Feveiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     const [months, setMonths] = useState(
@@ -51,9 +55,9 @@ const Calendar: React.FC = () => {
     }, [date, months, monthNumber]);
 
     
-    const handleDays = useCallback((index) => {
+    const handleDays = useCallback((index:number, isToday:boolean) => {
         const newDays = [...days];
-        if(newDays[index].inMonth) {
+        if(isToday) {
             newDays[index].value = 1;
             setDays(newDays);
         }
@@ -67,7 +71,7 @@ const Calendar: React.FC = () => {
     }, [date]);
 
     return (
-        <Container>
+        <Container className={props.className}>
             <IconLeft onClick={() => changeMonthNumber(-1)} />
             <section>
                 <h2>{ months[monthNumber].name } { date.getFullYear() }</h2>
@@ -83,11 +87,13 @@ const Calendar: React.FC = () => {
                 <CalendarContainer>
                     {
                         days.map((day, index) =>{
+                            const isToday = day.inMonth && day.position === date.getDate() && new Date().getMonth() === monthNumber && new Date().getFullYear() === date.getFullYear();
                             return(
                                 <CalendarItem
                                     value={day.value}
                                     inMonth={day.inMonth}
-                                    onClick={() => handleDays(index)}
+                                    isToday={isToday}
+                                    onClick={() => handleDays(index, isToday)}
                                 >
                                     {day.position}
                                 </CalendarItem>

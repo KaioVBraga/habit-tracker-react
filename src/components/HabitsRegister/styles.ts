@@ -1,10 +1,10 @@
 import styled from 'styled-components';
+import { BsPlusCircle } from 'react-icons/bs';
 
 export const Container = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     height: 100%;
     max-width: 70rem;
 
@@ -16,7 +16,11 @@ export const Container = styled.div`
     }
 
     & > form {
+        width: 100%;
         margin-top: 5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
         
         & > button {
             width: 100%;
@@ -38,5 +42,20 @@ export const Container = styled.div`
                 background: var(--color-secundary-dark);
             }
         }
+
+        & > fieldset {
+            border: none;
+            padding: 0;
+        }
+
+        & > fieldset:not(:first-of-type) {
+            margin-top: 5rem;
+        }
     }
+`;
+
+export const PlusIcon = styled(BsPlusCircle)`
+    font-size: 60px;
+    margin-top: 2.5rem;
+    cursor: pointer;
 `;

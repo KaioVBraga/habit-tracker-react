@@ -35,6 +35,7 @@ export const CalendarContainer = styled.div`
 interface CalendarItemProps {
     value?: number;
     inMonth?: boolean;
+    isToday?: boolean;
 }
 
 export const CalendarItem = styled.div<CalendarItemProps>`
@@ -49,6 +50,11 @@ export const CalendarItem = styled.div<CalendarItemProps>`
         if(props.value ===  1) {
             return '#68ce68';
         }
+
+        if(props.isToday) {
+            return '#6868ce';
+        }
+        
         return '#dfdfdf'
     }};
     color:  ${ props => {
@@ -56,7 +62,7 @@ export const CalendarItem = styled.div<CalendarItemProps>`
             return '#999999';
         }
 
-        if(props.value ===  1){ 
+        if(props.isToday || props.value ===  1){ 
             return('#ffffff')
         }
     }};
@@ -65,6 +71,7 @@ export const CalendarItem = styled.div<CalendarItemProps>`
     display: flex;
     justify-content: center;
     font-size: 20px;
+    user-select: none;
 
     &:hover {
         background-color: ${ props => props.inMonth && '#bababa' };
