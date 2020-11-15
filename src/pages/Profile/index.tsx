@@ -12,7 +12,7 @@ import { Container, ListItem } from './styles';
 import Statistics from "../../components/Statistics";
 
 interface Goal {
-    id: Number,
+    id: number,
     title: String,
     type: String,
     active: Number,
@@ -23,9 +23,9 @@ interface Goal {
     updatedAt: String
 };
 
-interface Goals extends Array<Goal>{};
+interface Goals extends Array<Goal> { };
 
-const Profile:React.FC = () => {
+const Profile: React.FC = () => {
     const history = useHistory();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -37,7 +37,7 @@ const Profile:React.FC = () => {
     const [activeGoalIndex, setActiveGoalIndex] = useState(0);
 
     useEffect(() => {
-        const getProfile = async (id:Number) => {
+        const getProfile = async (id: Number) => {
             try {
                 const response = await api.get(`users/${id}`);
 
@@ -56,31 +56,53 @@ const Profile:React.FC = () => {
         getProfile(user.id);
     }, []);
 
-    const handleCategory = useCallback((category:string) => {
+    const handleCategory = useCallback((category: string) => {
         setCategory(category);
         setRegisterPhase('goal');
     }, []);
 
     const handleGoal = useCallback(async (goal) => {
-        
+
         const habit_user = localStorage.getItem('habit_user') as string;
         const user = JSON.parse(habit_user);
 
         await api.post(`users/${user.id}/goals`, { ...goal, type: category, active: 1 })
-            .then( res => {
+            .then(res => {
                 const newGoals = [...goals];
                 newGoals.push(res.data);
                 setGoals(newGoals);
-            }); 
-        
+            });
+
         setGoal({ ...goal, type: category, active: 1 });
         setRegisterPhase('habits');
-    },[goals, category]);
+    }, [category, goals]);
+
+    const handleHabits = useCallback(async (habits) => {
+
+        const habit_user = localStorage.getItem('habit_user') as string;
+        const user = JSON.parse(habit_user);
+
+        console.log(habits);
+
+        // const response = await api.post(`users/${user.id}/habits`, { habits });
+        // .then(res => {
+        //     // const newGoals = [...goals];
+        //     // newGoals.push(res.data);
+        //     // set(newGoals);
+
+
+        // });
+
+        // console.log(response.data);
+
+        // setGoal({ ...goal, type: category, active: 1 });
+        setRegisterPhase('category');
+    }, []);
 
     const scrollTo = (className: string) => {
         const scrollY = window?.scrollY;
         const classRectTop = document?.querySelector(className)?.getBoundingClientRect()?.top || 0;
-        
+
         const y = classRectTop + scrollY;
 
         window.scroll({
@@ -97,7 +119,7 @@ const Profile:React.FC = () => {
                 </h1>
                 <div>
                     Olá, {name} !
-                    <div> 
+                    <div>
                     </div>
                 </div>
             </header>
@@ -121,30 +143,23 @@ const Profile:React.FC = () => {
                         onRequestClose={() => setIsModalOpen(false)}
                         style={{
                             overlay: {
-                              backgroundColor: 'rgba(0,0,0,.87)'
+                                backgroundColor: 'rgba(0,0,0,.87)'
                             },
                             content: {
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center'
                             }
-                          }}
+                        }}
                     >
-                        {/* {
+                        {
                             registerPhase === 'category' && <GoalTypeSelector handleCategory={handleCategory} />
                         }
                         {
                             registerPhase === 'goal' && <GoalRegister handleGoal={handleGoal} />
                         }
                         {
-                            registerPhase === 'habits' && <HabitsRegister handleGoal={handleGoal} />
-                        } */}
-                        {
-                            {
-                                category: <GoalTypeSelector handleCategory={handleCategory} />,
-                                goal: <GoalRegister handleGoal={handleGoal} />,
-                                habits: <HabitsRegister handleGoal={handleGoal} />
-                            }[registerPhase]
+                            registerPhase === 'habits' && <HabitsRegister handleHabits={handleHabits} goal_id={goals[goals.length - 1].id} />
                         }
                     </Modal>
                 </aside>
@@ -159,7 +174,7 @@ const Profile:React.FC = () => {
                     </ul>
                     <div>
                         <Calendar className="calendar" />
-                        <Statistics className="statistics"/> 
+                        <Statistics className="statistics" />
                     </div>
                 </section>
             </div>
