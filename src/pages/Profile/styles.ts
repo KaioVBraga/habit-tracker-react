@@ -76,21 +76,6 @@ export const Container = styled.div`
                 justify-content: center;
                 align-items: center;
                 list-style: none;
-
-                & > li {
-                    font-size: 1.5rem;
-                    width: 100%;
-                    cursor: pointer;
-                    user-select: none;
-                    padding: 1rem;
-
-                    border-bottom: 1px solid #bbb;
-
-                    &:hover {
-                        color: #fff;
-                        background-color: #686868;
-                    }
-                }
             }
         }
 
@@ -137,5 +122,27 @@ export const Container = styled.div`
                 } */
             }
         }
+    }
+`;
+
+interface ListItem {
+    active?:boolean;
+}
+
+export const ListItem = styled.li<ListItem>`
+    font-size: 1.5rem;
+    width: 100%;
+    cursor: pointer;
+    user-select: none;
+    padding: 1rem;
+
+    border-bottom: 1px solid #bbb;
+    
+    color: ${props => props.active && '#fff'};
+    background-color: ${props => props.active && '#686868'};
+
+    &:hover {
+        color: #fff;
+        background-color: #686868;
     }
 `;

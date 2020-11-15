@@ -8,7 +8,7 @@ import Calendar from '../../components/Calendar';
 import GoalTypeSelector from '../../components/GoalTypeSelector';
 import GoalRegister from '../../components/GoalRegister';
 import HabitsRegister from '../../components/HabitsRegister';
-import { Container } from './styles';
+import { Container, ListItem } from './styles';
 import Statistics from "../../components/Statistics";
 
 interface Goal {
@@ -34,6 +34,7 @@ const Profile:React.FC = () => {
     const [registerPhase, setRegisterPhase] = useState('category');
     const [category, setCategory] = useState('');
     const [goal, setGoal] = useState({});
+    const [activeGoalIndex, setActiveGoalIndex] = useState(0);
 
     useEffect(() => {
         const getProfile = async (id:Number) => {
@@ -105,11 +106,11 @@ const Profile:React.FC = () => {
                     <button onClick={() => setIsModalOpen(true)}>Cadastrar Meta</button>
                     <ul>
                         {
-                            goals.map( goal => {
+                            goals.map((goal, index) => {
                                 return(
-                                    <li>
+                                    <ListItem active={index === activeGoalIndex} onClick={ () => setActiveGoalIndex(index) }>
                                         {goal.title}
-                                    </li>
+                                    </ListItem>
                                 );
                             })
                         }
@@ -129,7 +130,7 @@ const Profile:React.FC = () => {
                             }
                           }}
                     >
-                        {
+                        {/* {
                             registerPhase === 'category' && <GoalTypeSelector handleCategory={handleCategory} />
                         }
                         {
@@ -137,6 +138,13 @@ const Profile:React.FC = () => {
                         }
                         {
                             registerPhase === 'habits' && <HabitsRegister handleGoal={handleGoal} />
+                        } */}
+                        {
+                            {
+                                category: <GoalTypeSelector handleCategory={handleCategory} />,
+                                goal: <GoalRegister handleGoal={handleGoal} />,
+                                habits: <HabitsRegister handleGoal={handleGoal} />
+                            }[registerPhase]
                         }
                     </Modal>
                 </aside>
