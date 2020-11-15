@@ -8,7 +8,7 @@ import Calendar from '../../components/Calendar';
 import GoalTypeSelector from '../../components/GoalTypeSelector';
 import GoalRegister from '../../components/GoalRegister';
 import HabitsRegister from '../../components/HabitsRegister';
-import { Container, ListItem } from './styles';
+import { Container, GoalItem, HabitItem } from './styles';
 import Statistics from "../../components/Statistics";
 
 interface Goal {
@@ -20,7 +20,15 @@ interface Goal {
     user_id: Number,
     reward: String,
     createdAt: String,
-    updatedAt: String
+    updatedAt: String,
+    deadends: {
+        id: number;
+        limit: string;
+        accomplished: boolean | null;
+        goal_id: number;
+        createdAt: string;
+        udpatedAt: string;
+    }[]
 };
 
 interface Goals extends Array<Goal> { };
@@ -35,20 +43,32 @@ const Profile: React.FC = () => {
     const [category, setCategory] = useState('');
     const [goal, setGoal] = useState({});
     const [activeGoalIndex, setActiveGoalIndex] = useState(0);
+    const [activeGoalHabits, setActiveGoalHabits] = useState([]);
+    const [activeGoalHabitsIndex, setActiveGoalHabitsIndex] = useState(0);
 
     useEffect(() => {
         const getProfile = async (id: Number) => {
             try {
                 const response = await api.get(`users/${id}`);
 
+                console.log('GOALS', response.data.goals);
+
                 setGoals(response.data.goals);
+
+                api.get(`/users/${user.id}/goals/${response.data.goals[0].id}/habits`).then(res => {
+                    setActiveGoalHabits(res.data);
+                    console.log(res.data);
+                }).catch(err => {
+                    setActiveGoalHabits([]);
+                    console.log(err);
+                });
             } catch (err) {
                 console.log(err);
             }
         }
 
         const habit_user = localStorage.getItem('habit_user') as string;
-        const user = JSON.parse(habit_user)
+        const user = JSON.parse(habit_user);
 
         setName(user.name);
         setEmail(user.email);
@@ -84,18 +104,21 @@ const Profile: React.FC = () => {
 
         console.log(habits);
 
-        // const response = await api.post(`users/${user.id}/habits`, { habits });
-        // .then(res => {
-        //     // const newGoals = [...goals];
-        //     // newGoals.push(res.data);
-        //     // set(newGoals);
+        api.post(`users/${user.id}/habits`, { habits })
+            .then(res => {
+                // const newGoals = [...goals];
+                // newGoals.push(res.data);
+                // set(newGoals);
+
+                console.log(res);
 
 
-        // });
+            });
 
         // console.log(response.data);
 
         // setGoal({ ...goal, type: category, active: 1 });
+        setIsModalOpen(false);
         setRegisterPhase('category');
     }, []);
 
@@ -110,6 +133,33 @@ const Profile: React.FC = () => {
             behavior: 'smooth'
         });
     }
+
+    const handleActiveGoal = useCallback((index:number) => {
+        console.log('HANDLE ACTIVE GOAL');
+
+        const userString = localStorage.getItem('habit_user') || '';
+        const user = JSON.parse(userString);
+
+        api.get(`/users/${user.id}/goals/${goals[index].id}/habits`).then(res => {
+            setActiveGoalHabits(res.data);
+            console.log('ACTIVE GOAL HABITS',res.data);
+        }).catch(err => {
+            setActiveGoalHabits([]);
+            console.log(err);
+        });
+
+        setActiveGoalIndex(index);
+    }, [goals]);
+
+    useEffect(() => {
+        setActiveGoalHabitsIndex(0);
+    }, [activeGoalIndex]);
+
+    const handleActiveHabitIndex = useCallback((index:number) => {
+        setActiveGoalHabitsIndex(index);
+
+        console.log(activeGoalHabits[index]);
+    }, []);
 
     return (
         <Container>
@@ -129,10 +179,23 @@ const Profile: React.FC = () => {
                     <ul>
                         {
                             goals.map((goal, index) => {
+                                const active = index === activeGoalIndex;
                                 return(
-                                    <ListItem active={index === activeGoalIndex} onClick={ () => setActiveGoalIndex(index) }>
-                                        {goal.title}
-                                    </ListItem>
+                                    <GoalItem active={active} onClick={ () => handleActiveGoal(index) }>
+                                        <p>{goal.title}</p>
+                                        {
+                                            active && activeGoalHabits.length > 0 &&
+                                            <div>
+                                                {
+                                                    activeGoalHabits.map((habit:any, indexHabit) => 
+                                                        <HabitItem active={activeGoalHabitsIndex === indexHabit} onClick={() => handleActiveHabitIndex(indexHabit) }>
+                                                            {habit.title}
+                                                        </HabitItem>
+                                                    )
+                                                }
+                                            </div>
+                                        }
+                                    </GoalItem>
                                 );
                             })
                         }
@@ -173,7 +236,7 @@ const Profile: React.FC = () => {
                         </li>
                     </ul>
                     <div>
-                        <Calendar className="calendar" />
+                        <Calendar deadends={goals[activeGoalIndex]?.deadends} habit={activeGoalHabits[activeGoalHabitsIndex]} className="calendar" />
                         <Statistics className="statistics" />
                     </div>
                 </section>

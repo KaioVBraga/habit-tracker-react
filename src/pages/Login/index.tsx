@@ -3,6 +3,7 @@ import PageHeader from "../../components/PageHeader";
 import Input from "../../components/Input";
 import api from "../../services/api";
 import { useHistory } from "react-router-dom";
+import swal from 'sweetalert';
 
 import warningIcon from "../../assets/images/icons/warning.svg";
 
@@ -24,6 +25,7 @@ const Login:React.FC = () => {
             history.push('/profile');
         } catch(err) {
             console.log(err.response);
+            swal('Erro no Login', 'Senha ou email incorretos', 'error');
         }
     }, [email, history, password]);
 

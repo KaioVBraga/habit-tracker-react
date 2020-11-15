@@ -36,6 +36,9 @@ interface CalendarItemProps {
     value?: number;
     inMonth?: boolean;
     isToday?: boolean;
+    inGoal?: boolean;
+    isDeadend?: boolean;
+    inFrequency?: boolean;
 }
 
 export const CalendarItem = styled.div<CalendarItemProps>`
@@ -43,12 +46,28 @@ export const CalendarItem = styled.div<CalendarItemProps>`
     height: 100%;
     padding: 2.5rem;
     background-color:  ${ props => {
+        if(props.isDeadend) {
+            return '#000';
+        }
+
         if(!props.inMonth) {
             return '#cacaca';
         }
         
-        if(props.value ===  1) {
-            return '#68ce68';
+        if((props.inGoal || (props.isToday && props.value !== 0)) && props.inFrequency) {
+            return `hsl(${(((props.value || 0))) * 120}, 51%, 61%)`;
+        }
+        
+        // if(props.value ===  1) {
+        //     return '#68ce68';
+        // }
+
+        // if(props.value ===  -1) {
+        //     return '#ce6868';
+        // }
+
+        if(!props.inFrequency) {
+            return `#bababa`;
         }
 
         if(props.isToday) {
@@ -58,11 +77,15 @@ export const CalendarItem = styled.div<CalendarItemProps>`
         return '#dfdfdf'
     }};
     color:  ${ props => {
-        if(!props.inMonth) {
+        if(!props.inFrequency && props.inMonth) {
             return '#999999';
         }
 
-        if(props.isToday || props.value ===  1){ 
+        if(!props.inMonth) {
+            return '#cacaca';
+        }
+
+        if(props.isToday || props.inGoal || props.isDeadend){ 
             return('#ffffff')
         }
     }};
