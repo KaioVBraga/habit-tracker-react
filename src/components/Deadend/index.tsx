@@ -1,12 +1,17 @@
 import React from "react";
 import { Container } from "./styles";
 
-const Deadend: React.FC = () => {
+interface Props {
+    value: string;
+    onChange: (e: React.FormEvent<Element>) => void;
+}
+
+const Deadend: React.FC<Props> = props => {
     return (
         <Container>
             Deadend
 
-            <input type="date" />
+            <input type="date" value={props.value} onChange={props.onChange} />
         </Container>
     );
 };

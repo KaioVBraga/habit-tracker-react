@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback, FormEvent } from "react";
 import Input from "../Input";
 import Textarea from '../Textarea';
-import Frequency from '../Frequency';
 import Deadend from '../Deadend';
 import { Container } from "./styles";
 
@@ -9,19 +8,27 @@ interface Goal {
     [key: string]: string;
 }
 interface Props {
-    handleGoal(goal: Goal): void;
+    handleGoal(goal: any): void;
 }
 
 const GoalRegister: React.FC<Props> = props => {
     const [goal, setGoal] = useState<Goal>({
         title: '',
         description: '',
-        reward: ''
+        reward: '',
+        limitDate: ''
     });
+
 
     const handleGoalChange = useCallback((e: FormEvent) => {
         const newGoal = { ...goal };
         newGoal[(e.target as HTMLInputElement).name] = (e.target as HTMLInputElement).value;
+        setGoal(newGoal);
+    }, [goal]);
+
+    const handleDeadendChange = useCallback((e: FormEvent) => {
+        const newGoal = { ...goal };
+        newGoal.limitDate = (e.target as HTMLInputElement).value;
         setGoal(newGoal);
     }, [goal]);
 
@@ -53,15 +60,16 @@ const GoalRegister: React.FC<Props> = props => {
                     onChange={handleGoalChange}
                 />
 
-                <Frequency />
-
-                <Deadend />
+                <Deadend
+                    value={goal.limitDate}
+                    onChange={handleDeadendChange}
+                />
 
                 <button>
                     Criar meta
                 </button>
             </form>
-        </Container>
+        </Container >
     );
 };
 
