@@ -38,6 +38,7 @@ export const Container = styled.div`
 
     & > div { 
         display: flex;
+        min-height: 100vh;
 
         & > aside {
             background-color: #cccccc; 
@@ -126,10 +127,11 @@ export const Container = styled.div`
 `;
 
 interface GoalItemProps {
-    active?:boolean;
+    active?: boolean;
 }
 
 export const GoalItem = styled.li<GoalItemProps>`
+    position: relative;
     font-size: 1.5rem;
     width: 100%;
     cursor: pointer;
@@ -162,7 +164,7 @@ export const GoalItem = styled.li<GoalItemProps>`
 `;
 
 interface HabitItemProps {
-    active?:boolean;
+    active?: boolean;
 }
 
 export const HabitItem = styled.li<HabitItemProps>`

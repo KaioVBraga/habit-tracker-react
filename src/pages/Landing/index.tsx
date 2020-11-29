@@ -7,7 +7,7 @@ import giveClassesIcon from "../../assets/images/icons/give-classes.svg";
 
 import { Container, Content, LogoContainer, HeroImage, ButtonsContainer } from './styles';
 
-const Landing:React.FC = () => {
+const Landing: React.FC = () => {
     return (
         <Container>
             <Content>

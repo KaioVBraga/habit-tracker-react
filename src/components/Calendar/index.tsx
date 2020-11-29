@@ -1,18 +1,12 @@
-import React, { useEffect, useState, useCallback, FormEvent } from "react";    
+import React, { useEffect, useState, useCallback, FormEvent } from "react";
 import Popup from 'reactjs-popup';
+import Modal from 'react-modal';
 import { Container, CalendarContainer, CalendarItem, IconLeft, IconRight } from "./styles";
 import api from '../../services/api';
+import swal from 'sweetalert';
+import { useSelector } from "react-redux";
 
 interface Props {
-    habit?: any;
-    deadends: {
-        id: number;
-        limit: string;
-        accomplished: boolean | null;
-        goal_id: number;
-        createdAt: string;
-        udpatedAt: string;
-    }[];
     className?: string;
 }
 
@@ -20,10 +14,10 @@ const Calendar: React.FC<Props> = props => {
     const [days, setDays] = useState(Array(35).fill(0));
     const [months, setMonths] = useState(
         [
-            { name: 'Janeiro', count: 31},
-            { name: 'Fevereiro', count: 28},
-            { name: 'Março', count: 31},
-            { name: 'Abril', count: 30},
+            { name: 'Janeiro', count: 31 },
+            { name: 'Fevereiro', count: 28 },
+            { name: 'Março', count: 31 },
+            { name: 'Abril', count: 30 },
             { name: 'Maio', count: 31 },
             { name: 'Junho', count: 30 },
             { name: 'Julho', count: 31 },
@@ -34,10 +28,33 @@ const Calendar: React.FC<Props> = props => {
             { name: 'Dezembro', count: 31 }
         ]
     );
-    const [date, setDate] = useState( new Date());
-    const [monthNumber, setMonthNumber] = useState( new Date().getMonth());
+    const [date, setDate] = useState(new Date());
+    const [monthNumber, setMonthNumber] = useState(new Date().getMonth());
     const [markationValue, setMarkationValue] = useState(1);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [finished, setFinished] = useState('');
+    const [continueGoal, setContinueGoal] = [...useState('')];
 
+    const { deadends, habit } = useSelector((state: any) => {
+        const goalIndex = state?.activeHabit?.goalIndex;
+        const habitIndex = state?.activeHabit?.habitIndex;
+        const goal = state?.goals[goalIndex]
+
+        if (goal) {
+            const habit = state?.goals[goalIndex]?.habits[habitIndex];
+            const deadends = state?.goals[goalIndex]?.deadends;
+
+            return ({
+                habit,
+                deadends
+            });
+        }
+
+        return ({
+            habit: null,
+            deadends: null
+        });
+    });
 
     const monthSum = (someDate: Date, value: number) => {
         const newDate = new Date(someDate);
@@ -46,50 +63,43 @@ const Calendar: React.FC<Props> = props => {
     }
 
     useEffect(() => {
-        if(props.habit) {
-            console.log('HABIT', props.habit);
-
-            const doubleDigit = (num:number) => {
+        if (habit) {
+            const doubleDigit = (num: number) => {
                 return `${num < 10 ? '0' + num : num}`;
             };
 
-            const markedDays = props.habit.marks.map((mark:any) => ({ 
-                date: new Date(mark.createdAt).toLocaleDateString(), 
+            const markedDays = habit.marks.map((mark: any) => ({
+                date: new Date(mark.createdAt).toLocaleDateString(),
                 markation: mark.markation
             }));
 
-            const setPosition = (position:number, month:number, inMonth:boolean) => {
+            const setPosition = (position: number, month: number, inMonth: boolean) => {
+                const localeDate = `${doubleDigit(position)}/${doubleDigit(month)}/${monthSum(actualCalendar, -1) === 11 ? actualCalendar.getFullYear() - 1 : actualCalendar.getFullYear()}`;
                 const date = `${doubleDigit(month)}/${doubleDigit(position)}/${monthSum(actualCalendar, -1) === 11 ? actualCalendar.getFullYear() - 1 : actualCalendar.getFullYear()}`;
-                const mark = markedDays.length > 0 ? markedDays.find((mark:any) => mark.date===date) || { markation: 0 } : { markation: 0 };
+                const mark = markedDays.length > 0 ? markedDays.find((mark: any) => mark.date === localeDate) || { markation: 0 } : { markation: 0 };
 
-
-                console.log("MARKED DAYS", markedDays);
-                console.log('DATE', date);
-
-                return { 
-                    position, 
-                    value: mark.markation, 
-                    inMonth, 
+                return {
+                    position,
+                    value: mark.markation,
+                    inMonth,
                     date
                 };
             }
 
             const actualCalendar = date;
-            const firstOfMonth = actualCalendar.getDay() - (actualCalendar.getDate() % 7)  + 1 > 0 ? actualCalendar.getDay() - (actualCalendar.getDate() % 7) + 1 : actualCalendar.getDay() - (actualCalendar.getDate() % 7) + 7 + 1
-
-            console.log(props.habit);
+            const firstOfMonth = actualCalendar.getDay() - (actualCalendar.getDate() % 7) + 1 > 0 ? actualCalendar.getDay() - (actualCalendar.getDate() % 7) + 1 : actualCalendar.getDay() - (actualCalendar.getDate() % 7) + 7 + 1
 
             const previousMonth = Array(months[monthSum(actualCalendar, -1)].count).fill(null)
-                .map((something, index) => index+1)
-                .map((position:number) => setPosition(position, monthSum(actualCalendar, -1)+1, false));
+                .map((something, index) => index + 1)
+                .map((position: number) => setPosition(position, monthSum(actualCalendar, -1) + 1, false));
             const actualMonth = Array(months[actualCalendar.getMonth()].count).fill(null)
-                .map((something, index) => index+1)
-                .map((position:number) => setPosition(position, actualCalendar.getMonth()+1, true));
+                .map((something, index) => index + 1)
+                .map((position: number) => setPosition(position, actualCalendar.getMonth() + 1, true));
             const postMonth = Array(months[monthSum(actualCalendar, 1)].count).fill(null)
-                .map((something, index) => index+1)
-                .map((position:number) => setPosition(position, monthSum(actualCalendar, 1)+1, false));
+                .map((something, index) => index + 1)
+                .map((position: number) => setPosition(position, monthSum(actualCalendar, 1) + 1, false));
 
-            const previousMonthStart = previousMonth.length-firstOfMonth;
+            const previousMonthStart = previousMonth.length - firstOfMonth;
             const previousMonthEnd = firstOfMonth % 7 && previousMonth.length;
             const previousMonthSlice = previousMonth.slice(previousMonthStart, previousMonthEnd);
 
@@ -99,60 +109,69 @@ const Calendar: React.FC<Props> = props => {
 
             const allDays = previousMonthSlice.concat(actualMonth).concat(postMonthSlice);
 
-            console.log('ALL DAYS', allDays);
-
             setDays(allDays)
         }
-    }, [date, months, monthNumber, props.habit]);
+    }, [date, months, monthNumber, habit]);
 
-    
-    const handleDays = useCallback((index:number, isToday:boolean, inFrequency:boolean, markation:number) => {
+    useEffect(() => {
+        console.log('HABIT CHANGE', habit);
+    }, [habit]);
+
+
+    const handleDays = useCallback((index: number, isToday: boolean, inFrequency: boolean, markation: number, isDeadend: boolean) => {
         const newDays = [...days];
-        if(isToday && inFrequency) {  
+
+        if (isDeadend) {
+            setIsModalOpen(true);
+        }
+
+        if (isToday && inFrequency && newDays[index].value !== markation) {
             const userString = localStorage.getItem('habit_user') || '';
             const user = JSON.parse(userString);
-            
+
             api
                 .post(
-                    `/users/${user.id}/goals/${props.habit.goal_id}/habits/${props.habit.id}/marks`, 
+                    `/users/${user.id}/goals/${habit.goal_id}/habits/${habit.id}/marks`,
                     { markation }
                 );
+
+            swal("Parabéns", `Aproveite sua recompensa da prática do seu hábito: ${habit.reward}`, "success");
 
             newDays[index].value = markation;
             setDays(newDays);
         }
-    }, [days, props.habit]);
+    }, [days, habit]);
 
-    const handleMarkationValueChange = useCallback((e:FormEvent) => {
-        if(props?.habit?.base) {
+    const handleMarkationValueChange = useCallback((e: FormEvent) => {
+        if (habit?.base) {
             const value = Number((e.target as HTMLInputElement).value);
-        
-            if(value < 0) {
+
+            if (value < 0) {
                 setMarkationValue(0);
                 return;
             }
 
-            if(value > props.habit.base) {
-                setMarkationValue(props.habit.base);
+            if (value > habit.base) {
+                setMarkationValue(habit.base);
                 return;
             }
-            
+
             setMarkationValue(value);
         }
-    }, [props.habit]);
+    }, [habit]);
 
-    const handleClosePopup = useCallback((index:number) => {
-        handleDays(index, true, true, markationValue);
-    }, [markationValue]);
+    const handleClosePopup = useCallback((index: number, isDeadend) => {
+        handleDays(index, true, true, markationValue, isDeadend);
+    }, [handleDays, markationValue]);
 
     const changeMonthNumber = useCallback((value) => {
         const newDate = date;
-        newDate.setMonth(newDate.getMonth()+value);
+        newDate.setMonth(newDate.getMonth() + value);
         setDate(newDate);
         setMonthNumber(newDate.getMonth());
     }, [date]);
 
-    if(!props.habit || !props.deadends) {
+    if (!habit || !deadends) {
         return null;
     }
 
@@ -160,7 +179,7 @@ const Calendar: React.FC<Props> = props => {
         <Container className={props.className}>
             <IconLeft onClick={() => changeMonthNumber(-1)} />
             <section>
-                <h2>{ months[monthNumber].name } { date.getFullYear() }</h2>
+                <h2>{months[monthNumber].name} {date.getFullYear()}</h2>
                 <ul>
                     <li>Sun</li>
                     <li>Mon</li>
@@ -172,69 +191,75 @@ const Calendar: React.FC<Props> = props => {
                 </ul>
                 <CalendarContainer>
                     {
-                        days.map((day, index) =>{
+                        days.map((day, index) => {
                             const isToday = day.inMonth && day.position === date.getDate() && new Date().getMonth() === monthNumber && new Date().getFullYear() === date.getFullYear();
-                            const cleanHabitDate = new Date(new Date(props.habit.createdAt).toLocaleDateString());
-                            const cleanDate = new Date(day.date);
-                            const cleanToday = new Date(new Date().toLocaleDateString());
-                            const inGoal = cleanHabitDate < cleanDate && cleanDate < cleanToday;
-                            const isDeadend = !!props.deadends
-                                .map(deadend => {
-                                    const [deadendYear, deadendMonth, rest] = deadend.limit.split('-');
-                                    const [deadendDay] = rest.split('T'); 
-                                    return new Date(`${deadendMonth}/${deadendDay}/${deadendYear}`);
-                                })
-                                .find(deadend => {
-                                    return deadend.valueOf() === cleanDate.valueOf()
-                                });
-                            
-                            const inFrequency = props.habit.frequency.includes(index%7);
-                            
-                            if(isToday) {
-                                if(props.habit.qualitative !== 1) {
-                                    return (
-                                        <Popup 
-                                            trigger={
-                                                <CalendarItem
-                                                    value={day.value/props.habit.base}
-                                                    inMonth={day.inMonth}
-                                                    isToday={isToday}
-                                                    isDeadend={isDeadend}
-                                                    inGoal={inGoal}
-                                                    inFrequency={inFrequency}
-                                                >
-                                                    {day.position}
-                                                </CalendarItem>
-                                            }
-                                            onClose={() => handleClosePopup(index)}
-                                            position={"top center"}
-                                        >
-                                            <div
-                                                style={{
-                                                    height: '100px',
-                                                    width: '100px',
-                                                    backgroundColor: 'white',
-                                                    display: 'flex',
-                                                    flexDirection: 'column'
-                                                }}
-                                            >
-                                                <label>Base: {props.habit.base}</label>
-                                                <input 
-                                                    type="number" 
-                                                    value={markationValue} 
-                                                    onChange={handleMarkationValueChange}
-                                                    style={{
-                                                        width: '90%',
-                                                        margin: '1rem auto 0 auto'
-                                                    }}
-                                                />
-                                            </div>
-                                        </Popup>
-                                    )
-                                }
+
+                            const handleDate = (dateString: string) => {
+                                const [deadendDay, deadendMonth, deadendYear] = dateString.split(' ')[0].split('/');
+                                return new Date(`${deadendMonth}/${deadendDay}/${deadendYear}`);
                             }
 
-                            return(
+
+                            const cleanHabitDate = handleDate(new Date(habit.createdAt).toLocaleString());
+                            const cleanDate = handleDate(new Date(day.date).toLocaleDateString());
+                            const cleanToday = handleDate(new Date().toLocaleDateString());
+
+                            const inGoal = cleanHabitDate <= cleanDate && cleanDate < cleanToday;
+                            const isDeadend = !!deadends
+                                .map((deadend: any) => {
+                                    const [deadendYear, deadendMonth, rest] = deadend.limit.split('-');
+                                    const [deadendDay] = rest.split('T');
+                                    return new Date(`${deadendMonth}/${deadendDay}/${deadendYear}`);
+                                })
+                                .find((deadend: any) => {
+                                    return deadend.valueOf() === cleanDate.valueOf()
+                                });
+
+                            const inFrequency = habit.frequency.includes(index % 7);
+
+                            if (isToday && habit.qualitative !== 1) {
+                                return (
+                                    <Popup
+                                        trigger={
+                                            <CalendarItem
+                                                value={day.value / habit.base}
+                                                inMonth={day.inMonth}
+                                                isToday={isToday}
+                                                isDeadend={isDeadend}
+                                                inGoal={inGoal}
+                                                inFrequency={inFrequency}
+                                            >
+                                                {day.position}
+                                            </CalendarItem>
+                                        }
+                                        onClose={() => handleClosePopup(index, isDeadend)}
+                                        position={"top center"}
+                                    >
+                                        <div
+                                            style={{
+                                                height: '100px',
+                                                width: '100px',
+                                                backgroundColor: 'white',
+                                                display: 'flex',
+                                                flexDirection: 'column'
+                                            }}
+                                        >
+                                            <label>Base: {habit.base}</label>
+                                            <input
+                                                type="number"
+                                                value={markationValue}
+                                                onChange={handleMarkationValueChange}
+                                                style={{
+                                                    width: '90%',
+                                                    margin: '1rem auto 0 auto'
+                                                }}
+                                            />
+                                        </div>
+                                    </Popup>
+                                )
+                            }
+
+                            return (
                                 <CalendarItem
                                     value={day.value}
                                     inMonth={day.inMonth}
@@ -242,7 +267,7 @@ const Calendar: React.FC<Props> = props => {
                                     isDeadend={isDeadend}
                                     inGoal={inGoal}
                                     inFrequency={inFrequency}
-                                    onClick={() => handleDays(index, isToday, inFrequency, 1)}
+                                    onClick={() => handleDays(index, isToday, inFrequency, 1, isDeadend)}
                                 >
                                     {day.position}
                                 </CalendarItem>
@@ -250,6 +275,70 @@ const Calendar: React.FC<Props> = props => {
                         })
                     }
                 </CalendarContainer>
+                {/* <Modal
+                    isOpen={isModalOpen}
+                    onRequestClose={() => setIsModalOpen(false)}
+                    style={{
+                        overlay: {
+                            backgroundColor: 'rgba(0,0,0,.87)'
+                        },
+                        content: {
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center'
+                        }
+                    }}
+                >
+                    <h1>Você finalizou seu desafio !</h1>
+                    <p style={{ marginTop: '10px' }}>Conseguiu atingir sua meta ?</p>
+
+                    {
+                        finished === '' && <div
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                width: '400px',
+                                marginTop: '10px'
+                            }}
+                        >
+                            <button
+                                onClick={() => setFinished('yes')}
+                                style={{
+                                    marginRight: '10px'
+                                }}
+                            >
+                                Sim
+                            </button>
+                            <button
+                                onClick={() => setFinished('no')}
+                                style={{
+                                    marginRight: '10px'
+                                }}
+                            >
+                                Não
+                            </button>
+                        </div>
+                    }
+
+                    {
+                        finished === 'yes' && <>
+                            <p>
+                                Parabéns, curta sua recompensa
+                            </p>
+                        </>
+                    }
+
+                    {
+                        finished === 'no' && continueGoal === '' && <>
+                            <p>
+                                Deseja, prolongar sua meta ?
+                            </p>
+
+                            <button onClick={() => setContinueGoal('yes')}>Sim</button>
+                            <button onClick={() => setContinueGoal('no')}>Não</button>
+                        </>
+                    }
+                </Modal> */}
             </section>
             <IconRight onClick={() => changeMonthNumber(1)} />
         </Container>

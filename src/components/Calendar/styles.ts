@@ -46,18 +46,22 @@ export const CalendarItem = styled.div<CalendarItemProps>`
     height: 100%;
     padding: 2.5rem;
     background-color:  ${ props => {
-        if(props.isDeadend) {
+        if (props.isDeadend) {
             return '#000';
         }
 
-        if(!props.inMonth) {
+        if (!props.inMonth) {
             return '#cacaca';
         }
-        
-        if((props.inGoal || (props.isToday && props.value !== 0)) && props.inFrequency) {
+
+        if (!props.inFrequency) {
+            return `#bababa`;
+        }
+
+        if ((props.inGoal || (props.isToday && props.value !== 0)) && props.inFrequency) {
             return `hsl(${(((props.value || 0))) * 120}, 51%, 61%)`;
         }
-        
+
         // if(props.value ===  1) {
         //     return '#68ce68';
         // }
@@ -66,27 +70,24 @@ export const CalendarItem = styled.div<CalendarItemProps>`
         //     return '#ce6868';
         // }
 
-        if(!props.inFrequency) {
-            return `#bababa`;
-        }
-
-        if(props.isToday) {
+        if (props.isToday) {
             return '#6868ce';
         }
-        
+
+
         return '#dfdfdf'
     }};
     color:  ${ props => {
-        if(!props.inFrequency && props.inMonth) {
+        if (!props.inFrequency && props.inMonth) {
             return '#999999';
         }
 
-        if(!props.inMonth) {
+        if (!props.inMonth) {
             return '#cacaca';
         }
 
-        if(props.isToday || props.inGoal || props.isDeadend){ 
-            return('#ffffff')
+        if (props.isToday || props.inGoal || props.isDeadend) {
+            return ('#ffffff')
         }
     }};
     cursor: ${ props => props.inMonth ? 'pointer' : 'default'};
@@ -97,7 +98,7 @@ export const CalendarItem = styled.div<CalendarItemProps>`
     user-select: none;
 
     &:hover {
-        background-color: ${ props => props.inMonth && '#bababa' };
+        background-color: ${ props => props.inMonth && '#bababa'};
     }
 `;
 

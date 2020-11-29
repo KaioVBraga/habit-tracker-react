@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useCallback, FormEvent } from "react";
+import React, { useState, useCallback, FormEvent } from "react";
 import Input from "../Input";
 import Textarea from '../Textarea';
 import Frequency from '../Frequency';
 import { Container, PlusIcon } from "./styles";
+import { useSelector } from "react-redux";
 
 
 interface Props {
@@ -19,13 +20,15 @@ interface Habit {
 }
 
 const HabitsRegister: React.FC<Props> = props => {
+    const { goals, activeHabit } = useSelector((state: any) => ({ goals: state.goals, activeHabit: state.activeHabit }));
+
     const [habits, setHabits] = useState<Array<Habit>>([
         {
             title: '',
             description: '',
             reward: '',
             frequency: [],
-            qualitative: false,
+            qualitative: 1,
             base: 0,
             weekDays: [
                 { symbol: 'D', marked: false },
@@ -36,7 +39,7 @@ const HabitsRegister: React.FC<Props> = props => {
                 { symbol: 'S', marked: false },
                 { symbol: 'S', marked: false }
             ],
-            goal_id: props.goal_id
+            goal_id: goals[activeHabit.goalIndex].id
         }
     ]);
 
@@ -83,11 +86,11 @@ const HabitsRegister: React.FC<Props> = props => {
                     { symbol: 'S', marked: false },
                     { symbol: 'S', marked: false }
                 ],
-                goal_id: props.goal_id
+                goal_id: goals[activeHabit.goalIndex].id
             }
         );
         setHabits(newHabits);
-    }, [habits, props.goal_id]);
+    }, [activeHabit, goals, habits]);
 
     return (
         <Container>
