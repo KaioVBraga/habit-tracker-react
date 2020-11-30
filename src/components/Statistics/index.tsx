@@ -35,12 +35,14 @@ const Statistics: React.FC<Props> = props => {
             api
                 .get(`/users/${user.id}/goals/${habit.goal_id}/habits/${habit.id}/statistics`)
                 .then(res => {
+                    console.log('STATITICS', res.data);
+
                     setStats(res.data);
                 });
         }
     }, [habit]);
 
-    if (!habit || !stats.biggerStreak) {
+    if (!habit || (!stats.biggerStreak && stats.biggerStreak !== 0)) {
         return null;
     }
 

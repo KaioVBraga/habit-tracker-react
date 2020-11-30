@@ -1,13 +1,15 @@
 import React from "react";
 
 import Calendar from '../../components/Calendar';
-import { Container } from './styles';
+import { Container, ProfileButton } from './styles';
 import Statistics from "../../components/Statistics";
 
 import { getUser } from '../../services/utils';
 import SideMenu from "../../components/SideMenu";
+import { useHistory } from "react-router-dom";
 
 const Profile: React.FC = () => {
+    const history = useHistory();
     const scrollTo = (className: string) => {
         const scrollY = window?.scrollY;
         const classRectTop = document?.querySelector(className)?.getBoundingClientRect()?.top || 0;
@@ -20,15 +22,28 @@ const Profile: React.FC = () => {
         });
     }
 
+    const logout = () => {
+        localStorage.removeItem('habit_user');
+        history.push('/');
+    }
+
+    const goToEditProfile = () => {
+        history.push('/profile/edit');
+    }
+
     return (
         <Container>
             <header>
                 <h1>
                     Habit Tracker
                 </h1>
-                <div>
+                <ProfileButton>
                     Olá, {getUser().name} !
-                </div>
+                    <div>
+                        <div onClick={goToEditProfile}>Editar perfil</div>
+                        <div onClick={logout}>Sair</div>
+                    </div>
+                </ProfileButton>
             </header>
             <div>
                 <SideMenu />

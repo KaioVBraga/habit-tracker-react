@@ -7,6 +7,10 @@ interface Props {
 }
 
 const Frequency: React.FC<Props> = props => {
+    if (!props.weekDays || !props.weekDays.length) {
+        return null;
+    }
+
     return (
         <Container>
             Frequência

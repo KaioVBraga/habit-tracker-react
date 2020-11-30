@@ -75,6 +75,12 @@ export const GoalItem = styled.li<GoalItemProps>`
             }
         }
     }
+
+    & > span {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
 `;
 
 interface HabitItemProps {
@@ -82,13 +88,53 @@ interface HabitItemProps {
 }
 
 export const HabitItem = styled.li<HabitItemProps>`
+    position: relative;
     margin: 1rem -1rem 1rem -1rem;
     padding: 0.8rem 1rem;
+    display: flex;
+    justify-content: space-between;
 
     background-color: ${props => props.active && '#474747'};
+
+    & > span {
+        display: ${props => props.active ? 'flex' : 'none'};
+    }
 
     &:hover {
         color: #fff;
         background-color: #474747;
+
+        & > span {
+            display: flex;
+        }
     }
+`;
+
+interface SetupContainerProps {
+    active?: boolean;
+}
+
+export const SetupContainer = styled.span<SetupContainerProps>`
+    display: flex;
+    &:hover {
+        display: flex;
+    }
+`;
+
+export const CloseButton = styled.span`
+    position: relative;
+    font-size: 20px;
+    color: #ce6868;
+    margin-left: 8px;
+`;
+
+export const AddButton = styled.span`
+    position: relative;
+    font-size: 20px;
+`;
+
+export const EditButton = styled.span`
+    position: relative;
+    font-size: 20px;
+    margin-left: 8px;
 `;
