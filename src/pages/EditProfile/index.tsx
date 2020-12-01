@@ -6,8 +6,6 @@ import { useHistory } from "react-router-dom";
 import swal from 'sweetalert';
 import { getUser } from '../../services/utils';
 
-import warningIcon from "../../assets/images/icons/warning.svg";
-
 import { Container } from './styles';
 
 const Register: React.FC = () => {

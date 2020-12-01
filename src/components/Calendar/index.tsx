@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, FormEvent } from "react";
 import Popup from 'reactjs-popup';
-import Modal from 'react-modal';
+// import Modal from 'react-modal';
 import { Container, CalendarContainer, CalendarItem, IconLeft, IconRight } from "./styles";
 import api from '../../services/api';
 import swal from 'sweetalert';
@@ -12,28 +12,26 @@ interface Props {
 
 const Calendar: React.FC<Props> = props => {
     const [days, setDays] = useState(Array(35).fill(0));
-    const [months, setMonths] = useState(
-        [
-            { name: 'Janeiro', count: 31 },
-            { name: 'Fevereiro', count: 28 },
-            { name: 'Março', count: 31 },
-            { name: 'Abril', count: 30 },
-            { name: 'Maio', count: 31 },
-            { name: 'Junho', count: 30 },
-            { name: 'Julho', count: 31 },
-            { name: 'Agosto', count: 31 },
-            { name: 'Setembro', count: 30 },
-            { name: 'Outubro', count: 31 },
-            { name: 'Novembro', count: 30 },
-            { name: 'Dezembro', count: 31 }
-        ]
-    );
+    const months = [
+        { name: 'Janeiro', count: 31 },
+        { name: 'Fevereiro', count: 28 },
+        { name: 'Março', count: 31 },
+        { name: 'Abril', count: 30 },
+        { name: 'Maio', count: 31 },
+        { name: 'Junho', count: 30 },
+        { name: 'Julho', count: 31 },
+        { name: 'Agosto', count: 31 },
+        { name: 'Setembro', count: 30 },
+        { name: 'Outubro', count: 31 },
+        { name: 'Novembro', count: 30 },
+        { name: 'Dezembro', count: 31 }
+    ];
     const [date, setDate] = useState(new Date());
     const [monthNumber, setMonthNumber] = useState(new Date().getMonth());
     const [markationValue, setMarkationValue] = useState(1);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [finished, setFinished] = useState('');
-    const [continueGoal, setContinueGoal] = [...useState('')];
+    // const [isModalOpen, setIsModalOpen] = useState(false);
+    // const [finished, setFinished] = useState('');
+    // const [continueGoal, setContinueGoal] = [...useState('')];
 
     const { deadends, habit } = useSelector((state: any) => {
         const goalIndex = state?.activeHabit?.goalIndex;
@@ -121,9 +119,9 @@ const Calendar: React.FC<Props> = props => {
     const handleDays = useCallback((index: number, isToday: boolean, inFrequency: boolean, markation: number, isDeadend: boolean) => {
         const newDays = [...days];
 
-        if (isDeadend) {
-            setIsModalOpen(true);
-        }
+        // if (isDeadend) {
+        //     setIsModalOpen(true);
+        // }
 
         if (isToday && inFrequency && newDays[index].value !== markation) {
             const userString = localStorage.getItem('habit_user') || '';

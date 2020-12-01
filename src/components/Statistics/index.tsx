@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Container, BarsContainer, DescriptionContainer, Bar } from "./styles";
+import { Container, BarsContainer, DescriptionContainer } from "./styles";
 import api from '../../services/api';
 import { useSelector } from 'react-redux';
 
@@ -80,14 +80,14 @@ const Statistics: React.FC<Props> = props => {
                 </tr>
             </DescriptionContainer>
 
-            <BarsContainer>
-                {/* <Bar percentage={100} />
+            {/* <BarsContainer>
+                 <Bar percentage={100} />
                 <Bar percentage={70} />
                 <Bar percentage={30} />
                 <Bar percentage={90} />
                 <Bar percentage={70} />
-                <Bar percentage={95} /> */}
-            </BarsContainer>
+                <Bar percentage={95} /> 
+            </BarsContainer> */}
         </Container>
     );
 };

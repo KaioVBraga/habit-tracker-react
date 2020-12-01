@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, FormEvent } from "react";
+import React, { useState, useCallback, FormEvent } from "react";
 import Input from "../Input";
 import Textarea from '../Textarea';
 import Deadend from '../Deadend';

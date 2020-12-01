@@ -1,13 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import Modal from 'react-modal';
 import api from '../../services/api';
 import { useSelector, useDispatch } from 'react-redux';
 import { changeGoals } from "../../redux/ducks/goals";
-import { changeActiveHabitState } from "../../redux/ducks/activeHabit";
 
 import HabitsEditor from '../HabitsEditor';
 import GoalEditor from '../GoalEditor';
-import { changeGoalModalState } from "../../redux/ducks/goalModal";
 
 
 interface Props {
@@ -17,8 +15,6 @@ interface Props {
 
 const ModalGoalEditor: React.FC<Props> = props => {
     const dispatch = useDispatch();
-
-    const [category, setCategory] = useState('');
 
     const goals = useSelector((state: any) => state.goals);
     const goalModal = useSelector((state: any) => state.goalModal);

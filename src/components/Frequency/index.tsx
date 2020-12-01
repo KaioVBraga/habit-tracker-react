@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React from "react";
 import { Container, DayItem } from "./styles";
 
 interface Props {

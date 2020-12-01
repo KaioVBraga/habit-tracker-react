@@ -3,7 +3,7 @@ import Input from "../Input";
 import Textarea from '../Textarea';
 import Deadend from '../Deadend';
 import { Container } from "./styles";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import api from '../../services/api';
 
 import { getUser } from '../../services/utils';
@@ -16,7 +16,6 @@ interface Props {
 }
 
 const GoalRegister: React.FC<Props> = props => {
-    const dispatch = useDispatch();
     const [goal, setGoal] = useState<Goal>({
         title: '',
         description: '',

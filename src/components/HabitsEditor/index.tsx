@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, FormEvent } from "react";
 import Input from "../Input";
 import Textarea from '../Textarea';
 import Frequency from '../Frequency';
-import { Container, PlusIcon } from "./styles";
+import { Container } from "./styles";
 import { useSelector } from "react-redux";
 
 
