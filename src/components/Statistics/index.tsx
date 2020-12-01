@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import { Container, BarsContainer, DescriptionContainer } from "./styles";
+import {
+    Container,
+    // BarsContainer, 
+    DescriptionContainer
+} from "./styles";
 import api from '../../services/api';
 import { useSelector } from 'react-redux';
 
