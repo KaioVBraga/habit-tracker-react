@@ -1,10 +1,15 @@
 import axios from 'axios';
 import https from 'https';
 
-const api = axios.create({
+export const api = axios.create({
+    baseURL: 'https://kaio-giulia-habit-tracker-api.herokuapp.com/',
+    httpsAgent: new https.Agent({
+        rejectUnauthorized: false
+    })
+})
+
+export const local = axios.create({
     baseURL: 'http://localhost:3333/',
-    // baseURL: 'http://localhost:3333/',
-    // baseURL: 'https://1cfff48fefc8.ngrok.io',
     httpsAgent: new https.Agent({
         rejectUnauthorized: false
     })
