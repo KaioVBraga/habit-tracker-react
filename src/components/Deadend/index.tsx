@@ -9,7 +9,7 @@ interface Props {
 const Deadend: React.FC<Props> = props => {
     return (
         <Container>
-            Deadend
+            Data Limite
 
             <input type="date" value={props.value} onChange={props.onChange} />
         </Container>

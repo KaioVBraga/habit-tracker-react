@@ -65,9 +65,13 @@ const HabitsRegister: React.FC<Props> = props => {
     }, [habit]);
 
     const handleHabitsCheckChange = useCallback((e: FormEvent) => {
+        const { name } = (e.target as HTMLInputElement);
         const newHabit = { ...habit };
-        newHabit[(e.target as HTMLInputElement).name] = (e.target as HTMLInputElement).checked ? 1 : 0;
+
+        newHabit[name] = newHabit[name] === 1 ? 0 : 1;
+
         setHabit(newHabit);
+
     }, [habit]);
 
     return (
@@ -97,15 +101,19 @@ const HabitsRegister: React.FC<Props> = props => {
                         onChange={handleHabitsTextAreaChange}
                     />
 
-                    <label>Qualitativo</label>
-                    <input type="checkbox" name="qualitative" checked={habit.qualitative === 1} onChange={handleHabitsCheckChange} />
+                    <label>Quantitativo</label>
+                    <input type="checkbox" name="qualitative" checked={habit.qualitative !== 1} onChange={handleHabitsCheckChange} />
 
-                    <label>Base</label>
-                    <input
-                        name="base"
-                        value={habit.base}
-                        onChange={handleHabitsInputChange}
-                    />
+                    {
+                        habit.qualitative !== 1 && <>
+                            <label>Base</label>
+                            <input
+                                name="base"
+                                value={habit.base}
+                                onChange={handleHabitsInputChange}
+                            />
+                        </>
+                    }
 
                     <Frequency
                         handleWeekDaysChange={index => handleWeekDaysChange(index)}

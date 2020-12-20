@@ -65,8 +65,10 @@ const HabitsRegister: React.FC<Props> = props => {
     }, [habits]);
 
     const handleHabitsCheckChange = useCallback((e: FormEvent, index: number) => {
+        const { name } = (e.target as HTMLInputElement);
         const newHabits = [...habits];
-        newHabits[index][(e.target as HTMLInputElement).name] = (e.target as HTMLInputElement).checked ? 1 : 0;
+
+        newHabits[index][name] = newHabits[index][name] === 1 ? 0 : 1;
         setHabits(newHabits);
     }, [habits]);
 
@@ -120,19 +122,19 @@ const HabitsRegister: React.FC<Props> = props => {
                                 onChange={e => handleHabitsTextAreaChange(e, indexI)}
                             />
 
-                            <label>
-                                Qualitativo
-                            </label>
-                            <input type="checkbox" name="qualitative" checked={habit.qualitative === 1} onChange={e => handleHabitsCheckChange(e, indexI)} />
+                            <label>Quantitativo</label>
+                            <input type="checkbox" name="qualitative" checked={habit.qualitative !== 1} onChange={e => handleHabitsCheckChange(e, indexI)} />
 
-                            <label>
-                                Base
-                            </label>
-                            <input
-                                name="base"
-                                value={habit.base}
-                                onChange={e => handleHabitsInputChange(e, indexI)}
-                            />
+                            {
+                                habit.qualitative !== 1 && <>
+                                    <label>Base</label>
+                                    <input
+                                        name="base"
+                                        value={habit.base}
+                                        onChange={e => handleHabitsInputChange(e, indexI)}
+                                    />
+                                </>
+                            }
 
                             <Frequency
                                 handleWeekDaysChange={indexJ => handleWeekDaysChange(indexI, indexJ)}
