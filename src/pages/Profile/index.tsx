@@ -24,7 +24,7 @@ const Profile: React.FC = () => {
 
     const logout = () => {
         localStorage.removeItem('habit_user');
-        history.push('/');
+        window.location.href = '/';
     }
 
     const goToEditProfile = () => {

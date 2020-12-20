@@ -12,6 +12,7 @@ import ModalGoalCreator from "../../components/ModalGoalCreator";
 import ModalGoalEditor from "../../components/ModalGoalEditor";
 
 import { getUser } from '../../services/utils';
+import swal from "sweetalert";
 
 interface Props {
     className?: string;
@@ -27,6 +28,7 @@ const SideMenu: React.FC<Props> = props => {
     const activeHabit = useSelector((state: any) => state.activeHabit);
 
     useEffect(() => {
+        console.log("DISPATCH");
         api
             .get(`users/${getUser().id}`)
             .then(res => {
@@ -34,38 +36,60 @@ const SideMenu: React.FC<Props> = props => {
             })
             .catch(err => {
                 console.error(err);
-            })
-    }, [dispatch]);
+            });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleActiveGoal = useCallback((index: number) => {
-        dispatch(changeActiveHabitState({ goalIndex: index, habitIndex: 0 }));
-    }, [dispatch]);
+        const newActiveHabit = { goalIndex: index, habitIndex: 0 };
+        localStorage.setItem('habit_active', JSON.stringify(newActiveHabit));
+        dispatch(changeActiveHabitState(newActiveHabit));
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleActiveHabitIndex = useCallback((indexGoal: number, indexHabit: number) => {
-        dispatch(changeActiveHabitState({ goalIndex: indexGoal, habitIndex: indexHabit }));
-    }, [dispatch]);
+        const newActiveHabit = { goalIndex: indexGoal, habitIndex: indexHabit };
+        localStorage.setItem('habit_active', JSON.stringify(newActiveHabit));
+        dispatch(changeActiveHabitState(newActiveHabit));
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const deleteHabit = useCallback((indexGoal: number, indexHabit: number) => {
-        api.delete(`users/${getUser().id}/goals/${goals[indexGoal].id}/habits/${goals[indexGoal].habits[indexHabit].id}`)
-            .then(res => {
-                const newGoals = [...goals];
-                const removedHabit = goals[indexGoal].habits[indexHabit];
+        swal("Tem certeza que quer deletar este hábito ?").then(res => {
+            if (res) {
+                api.delete(`users/${getUser().id}/goals/${goals[indexGoal].id}/habits/${goals[indexGoal].habits[indexHabit].id}`)
+                    .then(res => {
+                        const newGoals = [...goals];
+                        const removedHabit = goals[indexGoal].habits[indexHabit];
 
-                newGoals[indexGoal].habits = newGoals[indexGoal].habits.filter((habit: any) => habit.id !== removedHabit.id)
+                        newGoals[indexGoal].habits = newGoals[indexGoal].habits.filter((habit: any) => habit.id !== removedHabit.id);
 
-                dispatch(changeGoals(newGoals));
-            })
-    }, [dispatch, goals]);
+                        dispatch(changeGoals(newGoals));
+                    });
+            }
+        });
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [goals]);
 
     const deleteGoal = useCallback((indexGoal: number) => {
-        api.delete(`users/${getUser().id}/goals/${goals[indexGoal].id}`)
-            .then(res => {
-                const removedGoal = goals[indexGoal];
-                const newGoals = [...goals].filter((goal: any) => goal.id !== removedGoal.id)
+        swal("Tem certeza que quer deletar esta meta ?").then(res => {
+            if (res) {
+                api.delete(`users/${getUser().id}/goals/${goals[indexGoal].id}`)
+                    .then(res => {
+                        const removedGoal = goals[indexGoal];
+                        const newGoals = [...goals].filter((goal: any) => goal.id !== removedGoal.id)
+                        handleActiveGoal(indexGoal);
+                        dispatch(changeGoals(newGoals));
+                    });
+            }
+        });
 
-                dispatch(changeGoals(newGoals));
-            })
-    }, [dispatch, goals]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [goals]);
 
     return (
         <Container>

@@ -33,7 +33,7 @@ const ModalGoalCreator: React.FC<Props> = props => {
             .then(res => {
                 const newGoals = [...goals];
 
-                const formatedHabits = habits.map((habit: any) => ({ ...habit, marks: [] }))
+                const formatedHabits = res.data.map((habit: any) => ({ ...habit, marks: [] }))
 
                 newGoals[activeHabit.goalIndex].habits = newGoals[activeHabit.goalIndex].habits.concat(formatedHabits);
                 dispatch(changeGoals(newGoals));
@@ -46,7 +46,8 @@ const ModalGoalCreator: React.FC<Props> = props => {
         props.setIsModalOpen(false);
 
         dispatch(changeGoalModalState({ screen: 'category' }));
-    }, [dispatch, goals, activeHabit, props]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [goals, activeHabit, props]);
 
     const handleGoal = useCallback(async (goal) => {
 
@@ -59,16 +60,18 @@ const ModalGoalCreator: React.FC<Props> = props => {
                 newGoals.push(res.data.goals);
 
                 dispatch(changeGoals(newGoals));
-                dispatch(changeActiveHabitState({ goalIndex: goals.length - 1, habitIndex: 0 }));
+                dispatch(changeActiveHabitState({ goalIndex: newGoals.length - 1, habitIndex: 0 }));
 
                 dispatch(changeGoalModalState({ screen: 'habits' }));
             });
-    }, [category, dispatch, goals]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [category, goals]);
 
     const handleCategory = useCallback((category: string) => {
         setCategory(category);
-        dispatch(changeGoalModalState({ screen: 'goal' }))
-    }, [dispatch]);
+        dispatch(changeGoalModalState({ screen: 'goal' }));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <Modal

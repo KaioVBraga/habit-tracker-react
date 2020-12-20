@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState, useCallback, FormEvent } from "react";
 import Popup from 'reactjs-popup';
 // import Modal from 'react-modal';
@@ -29,30 +30,14 @@ const Calendar: React.FC<Props> = props => {
     const [date, setDate] = useState(new Date());
     const [monthNumber, setMonthNumber] = useState(new Date().getMonth());
     const [markationValue, setMarkationValue] = useState(1);
+    const [deadends, setDeadends] = useState(null);
+    const [habit, setHabit] = useState(null);
+
     // const [isModalOpen, setIsModalOpen] = useState(false);
     // const [finished, setFinished] = useState('');
     // const [continueGoal, setContinueGoal] = [...useState('')];
 
-    const { deadends, habit } = useSelector((state: any) => {
-        const goalIndex = state?.activeHabit?.goalIndex;
-        const habitIndex = state?.activeHabit?.habitIndex;
-        const goal = state?.goals[goalIndex]
-
-        if (goal) {
-            const habit = state?.goals[goalIndex]?.habits[habitIndex];
-            const deadends = state?.goals[goalIndex]?.deadends;
-
-            return ({
-                habit,
-                deadends
-            });
-        }
-
-        return ({
-            habit: null,
-            deadends: null
-        });
-    });
+    const { activeHabit, goals } = useSelector((state: any) => state);
 
     const monthSum = (someDate: Date, value: number) => {
         const newDate = new Date(someDate);
@@ -61,11 +46,41 @@ const Calendar: React.FC<Props> = props => {
     }
 
     useEffect(() => {
+        const goalIndex = activeHabit?.goalIndex;
+        const habitIndex = activeHabit?.habitIndex;
+
+        if (!goals.length || goalIndex === null || habitIndex === null) {
+            setHabit(null);
+            setDeadends(null);
+            return;
+        }
+
+
+        const goal = goals[goalIndex];
+
+        console.log("goal", goal);
+        console.log('habitIndex', habitIndex);
+
+        const newHabit = goal.habits[habitIndex];
+
+        console.log('NEW HABIT', newHabit);
+
+        const newDeadends = goal.deadends;
+
+        setHabit(newHabit);
+        setDeadends(newDeadends);
+    }, [activeHabit, deadends, goals]);
+
+    useEffect(() => {
+        console.log("habit", habit);
         if (habit) {
+            console.log("LOOP DATE");
+
             const doubleDigit = (num: number) => {
                 return `${num < 10 ? '0' + num : num}`;
             };
 
+            // @ts-ignore
             const markedDays = habit.marks.map((mark: any) => ({
                 date: new Date(mark.createdAt).toLocaleDateString(),
                 markation: mark.markation
@@ -109,11 +124,8 @@ const Calendar: React.FC<Props> = props => {
 
             setDays(allDays)
         }
-    }, [date, months, monthNumber, habit]);
-
-    useEffect(() => {
-        console.log('HABIT CHANGE', habit);
-    }, [habit]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [date, monthNumber, habit, activeHabit]);
 
 
     const handleDays = useCallback((index: number, isToday: boolean, inFrequency: boolean, markation: number, isDeadend: boolean) => {
@@ -127,16 +139,21 @@ const Calendar: React.FC<Props> = props => {
             const userString = localStorage.getItem('habit_user') || '';
             const user = JSON.parse(userString);
 
+            console.log('MARK USER', user);
+            console.log('MARK HABIT', habit);
+
+
             api
-                .post(
-                    `/users/${user.id}/goals/${habit.goal_id}/habits/${habit.id}/marks`,
-                    { markation }
-                );
-
-            swal("Parabéns", `Aproveite sua recompensa da prática do seu hábito: ${habit.reward}`, "success");
-
-            newDays[index].value = markation;
-            setDays(newDays);
+                .post(`/users/${user.id}/goals/${habit.goal_id}/habits/${habit.id}/marks`, { markation })
+                .then(() => {
+                    swal("Parabéns", `Aproveite sua recompensa da prática do seu hábito: ${habit.reward}`, "success");
+                    newDays[index].value = markation;
+                    setDays(newDays);
+                })
+                .catch(err => {
+                    console.error(err);
+                    swal("Ops", `Ocorreu um erro ao salvar a marcação de seu hábito, por favor, tente mais tarde.`, "error");
+                });
         }
     }, [days, habit]);
 
@@ -160,7 +177,8 @@ const Calendar: React.FC<Props> = props => {
 
     const handleClosePopup = useCallback((index: number, isDeadend) => {
         handleDays(index, true, true, markationValue, isDeadend);
-    }, [handleDays, markationValue]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [markationValue]);
 
     const changeMonthNumber = useCallback((value) => {
         const newDate = date;
