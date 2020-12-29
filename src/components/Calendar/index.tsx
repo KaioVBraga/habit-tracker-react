@@ -5,13 +5,15 @@ import Popup from 'reactjs-popup';
 import { Container, CalendarContainer, CalendarItem, IconLeft, IconRight } from "./styles";
 import api from '../../services/api';
 import swal from 'sweetalert';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { changeActiveHabitState } from "../../redux/ducks/activeHabit";
 
 interface Props {
     className?: string;
 }
 
 const Calendar: React.FC<Props> = props => {
+    const dispatch = useDispatch();
     const [days, setDays] = useState(Array(35).fill(0));
     const months = [
         { name: 'Janeiro', count: 31 },
@@ -46,30 +48,27 @@ const Calendar: React.FC<Props> = props => {
     }
 
     useEffect(() => {
-        const goalIndex = activeHabit?.goalIndex;
-        const habitIndex = activeHabit?.habitIndex;
+        try {
+            const goalIndex = activeHabit?.goalIndex;
+            const habitIndex = activeHabit?.habitIndex;
 
-        if (!goals.length || goalIndex === null || habitIndex === null) {
-            setHabit(null);
-            setDeadends(null);
-            return;
+            if (!goals.length || goalIndex === null || habitIndex === null) {
+                setHabit(null);
+                setDeadends(null);
+                return;
+            }
+
+            const goal = goals[goalIndex];
+            const newHabit = goal.habits[habitIndex];
+            const newDeadends = goal.deadends;
+
+            setHabit(newHabit);
+            setDeadends(newDeadends);
+        } catch (err) {
+            localStorage.getItem(JSON.stringify({ goalIndex: 0, habitIndex: 0 }));
+            dispatch(changeActiveHabitState({ goalIndex: 0, habitIndex: 0 }));
         }
-
-
-        const goal = goals[goalIndex];
-
-        console.log("goal", goal);
-        console.log('habitIndex', habitIndex);
-
-        const newHabit = goal.habits[habitIndex];
-
-        console.log('NEW HABIT', newHabit);
-
-        const newDeadends = goal.deadends;
-
-        setHabit(newHabit);
-        setDeadends(newDeadends);
-    }, [activeHabit, deadends, goals]);
+    }, [activeHabit, deadends, dispatch, goals]);
 
     useEffect(() => {
         console.log("habit", habit);

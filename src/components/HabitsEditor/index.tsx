@@ -4,6 +4,8 @@ import Textarea from '../Textarea';
 import Frequency from '../Frequency';
 import { Container } from "./styles";
 import { useSelector } from "react-redux";
+import * as Yup from 'yup';
+import swal from 'sweetalert';
 
 
 interface Props {
@@ -74,12 +76,61 @@ const HabitsRegister: React.FC<Props> = props => {
 
     }, [habit]);
 
+    const handleSubmit = useCallback((e: FormEvent) => {
+        e.preventDefault();
+
+        const habitValidation =
+            Yup.object().shape({
+                title: Yup
+                    .string()
+                    .required("Por favor, insira o título do hábito."),
+                description: Yup
+                    .string()
+                    .required("Por favor, insira a descrição do hábito."),
+                reward: Yup
+                    .string()
+                    .required("Por favor, insira a recompensa do hábito."),
+                goal_id: Yup
+                    .number()
+                    .integer()
+                    .required("Por favor, o hábito deve pertencer a uma meta."),
+                frequency: Yup
+                    .array()
+                    .of(
+                        Yup.string()
+                    )
+                    .min(1, 'Por favor, selecione um dia para frequência.')
+                    .max(7, 'Por favor, limite-se a 7 dias da semana.'),
+                weekDays: Yup.array().of(
+                    Yup.object().shape({
+                        symbol: Yup.string().required(),
+                        marked: Yup.boolean().required()
+                    })
+                )
+            });
+
+        habitValidation
+            .validate(habit, { abortEarly: true })
+            .then(res => props.handleHabit(habit))
+            .catch(err => {
+                if (err instanceof Yup.ValidationError) {
+                    swal("Erro!", `${err}`.replace('ValidationError:', ''), "error");
+                } else {
+                    swal(
+                        "Erro!",
+                        "Verifique os dados passados e tente novamente. Se persistir, contacte o suporte!",
+                        "error"
+                    );
+                }
+            });
+    }, [habit, props]);
+
     return (
         <Container>
             <h1>
                 Hábitos para a meta
             </h1>
-            <form onSubmit={() => props.handleHabit(habit)}>
+            <form onSubmit={handleSubmit}>
 
                 <fieldset>
                     <Input
