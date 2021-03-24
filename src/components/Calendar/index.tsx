@@ -1,296 +1,387 @@
 // @ts-nocheck
 import React, { useEffect, useState, useCallback, FormEvent } from "react";
-import Popup from 'reactjs-popup';
+import Popup from "reactjs-popup";
 // import Modal from 'react-modal';
-import { Container, CalendarContainer, CalendarItem, IconLeft, IconRight } from "./styles";
-import api from '../../services/api';
-import swal from 'sweetalert';
+import {
+  Container,
+  CalendarContainer,
+  CalendarItem,
+  IconLeft,
+  IconRight,
+} from "./styles";
+import api from "../../services/api";
+import swal from "sweetalert";
 import { useSelector, useDispatch } from "react-redux";
 import { changeActiveHabitState } from "../../redux/ducks/activeHabit";
 
 interface Props {
-    className?: string;
+  className?: string;
 }
 
-const Calendar: React.FC<Props> = props => {
-    const dispatch = useDispatch();
-    const [days, setDays] = useState(Array(35).fill(0));
-    const months = [
-        { name: 'Janeiro', count: 31 },
-        { name: 'Fevereiro', count: 28 },
-        { name: 'Março', count: 31 },
-        { name: 'Abril', count: 30 },
-        { name: 'Maio', count: 31 },
-        { name: 'Junho', count: 30 },
-        { name: 'Julho', count: 31 },
-        { name: 'Agosto', count: 31 },
-        { name: 'Setembro', count: 30 },
-        { name: 'Outubro', count: 31 },
-        { name: 'Novembro', count: 30 },
-        { name: 'Dezembro', count: 31 }
-    ];
-    const [date, setDate] = useState(new Date());
-    const [monthNumber, setMonthNumber] = useState(new Date().getMonth());
-    const [markationValue, setMarkationValue] = useState(1);
-    const [deadends, setDeadends] = useState(null);
-    const [habit, setHabit] = useState(null);
+const Calendar: React.FC<Props> = (props) => {
+  const dispatch = useDispatch();
+  const [days, setDays] = useState(Array(35).fill(0));
+  const months = [
+    { name: "Janeiro", count: 31 },
+    { name: "Fevereiro", count: 28 },
+    { name: "Março", count: 31 },
+    { name: "Abril", count: 30 },
+    { name: "Maio", count: 31 },
+    { name: "Junho", count: 30 },
+    { name: "Julho", count: 31 },
+    { name: "Agosto", count: 31 },
+    { name: "Setembro", count: 30 },
+    { name: "Outubro", count: 31 },
+    { name: "Novembro", count: 30 },
+    { name: "Dezembro", count: 31 },
+  ];
+  const [date, setDate] = useState(new Date());
+  const [monthNumber, setMonthNumber] = useState(new Date().getMonth());
+  const [markationValue, setMarkationValue] = useState(1);
+  const [deadends, setDeadends] = useState(null);
+  const [habit, setHabit] = useState(null);
 
-    // const [isModalOpen, setIsModalOpen] = useState(false);
-    // const [finished, setFinished] = useState('');
-    // const [continueGoal, setContinueGoal] = [...useState('')];
+  // const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [finished, setFinished] = useState('');
+  // const [continueGoal, setContinueGoal] = [...useState('')];
 
-    const { activeHabit, goals } = useSelector((state: any) => state);
+  const { activeHabit, goals } = useSelector((state: any) => state);
 
-    const monthSum = (someDate: Date, value: number) => {
-        const newDate = new Date(someDate);
-        newDate.setMonth(newDate.getMonth() + value);
-        return newDate.getMonth();
+  const monthSum = (someDate: Date, value: number) => {
+    const newDate = new Date(someDate);
+    newDate.setMonth(newDate.getMonth() + value);
+    return newDate.getMonth();
+  };
+
+  useEffect(() => {
+    try {
+      const goalIndex = activeHabit?.goalIndex;
+      const habitIndex = activeHabit?.habitIndex;
+
+      if (!goals.length || goalIndex === null || habitIndex === null) {
+        setHabit(null);
+        setDeadends(null);
+        return;
+      }
+
+      const goal = goals[goalIndex];
+      const newHabit = goal.habits[habitIndex];
+      const newDeadends = goal.deadends;
+
+      setHabit(newHabit);
+      setDeadends(newDeadends);
+    } catch (err) {
+      localStorage.getItem(JSON.stringify({ goalIndex: 0, habitIndex: 0 }));
+      dispatch(changeActiveHabitState({ goalIndex: 0, habitIndex: 0 }));
     }
+  }, [activeHabit, deadends, dispatch, goals]);
 
-    useEffect(() => {
-        try {
-            const goalIndex = activeHabit?.goalIndex;
-            const habitIndex = activeHabit?.habitIndex;
+  useEffect(() => {
+    console.log("habit", habit);
+    if (habit) {
+      console.log("LOOP DATE");
 
-            if (!goals.length || goalIndex === null || habitIndex === null) {
-                setHabit(null);
-                setDeadends(null);
-                return;
-            }
+      const doubleDigit = (num: number) => {
+        return `${num < 10 ? "0" + num : num}`;
+      };
 
-            const goal = goals[goalIndex];
-            const newHabit = goal.habits[habitIndex];
-            const newDeadends = goal.deadends;
+      // @ts-ignore
+      const markedDays = habit.marks.map((mark: any) => ({
+        date: new Date(mark.createdAt).toLocaleDateString(),
+        markation: mark.markation,
+      }));
 
-            setHabit(newHabit);
-            setDeadends(newDeadends);
-        } catch (err) {
-            localStorage.getItem(JSON.stringify({ goalIndex: 0, habitIndex: 0 }));
-            dispatch(changeActiveHabitState({ goalIndex: 0, habitIndex: 0 }));
+      const setPosition = (
+        position: number,
+        month: number,
+        inMonth: boolean
+      ) => {
+        const localeDate = `${doubleDigit(position)}/${doubleDigit(month)}/${
+          monthSum(actualCalendar, -1) === 11
+            ? actualCalendar.getFullYear() - 1
+            : actualCalendar.getFullYear()
+        }`;
+        const date = `${doubleDigit(month)}/${doubleDigit(position)}/${
+          monthSum(actualCalendar, -1) === 11
+            ? actualCalendar.getFullYear() - 1
+            : actualCalendar.getFullYear()
+        }`;
+        const mark =
+          markedDays.length > 0
+            ? markedDays.find((mark: any) => mark.date === localeDate) || {
+                markation: 0,
+              }
+            : { markation: 0 };
+
+        return {
+          position,
+          value: mark.markation,
+          inMonth,
+          date,
+        };
+      };
+
+      const actualCalendar = date;
+      const firstOfMonth =
+        actualCalendar.getDay() - (actualCalendar.getDate() % 7) + 1 > 0
+          ? actualCalendar.getDay() - (actualCalendar.getDate() % 7) + 1
+          : actualCalendar.getDay() - (actualCalendar.getDate() % 7) + 7 + 1;
+
+      const previousMonth = Array(months[monthSum(actualCalendar, -1)].count)
+        .fill(null)
+        .map((something, index) => index + 1)
+        .map((position: number) =>
+          setPosition(position, monthSum(actualCalendar, -1) + 1, false)
+        );
+      const actualMonth = Array(months[actualCalendar.getMonth()].count)
+        .fill(null)
+        .map((something, index) => index + 1)
+        .map((position: number) =>
+          setPosition(position, actualCalendar.getMonth() + 1, true)
+        );
+      const postMonth = Array(months[monthSum(actualCalendar, 1)].count)
+        .fill(null)
+        .map((something, index) => index + 1)
+        .map((position: number) =>
+          setPosition(position, monthSum(actualCalendar, 1) + 1, false)
+        );
+
+      const previousMonthStart = previousMonth.length - firstOfMonth;
+      const previousMonthEnd = firstOfMonth % 7 && previousMonth.length;
+      const previousMonthSlice = previousMonth.slice(
+        previousMonthStart,
+        previousMonthEnd
+      );
+
+      const postMonthStart = 0;
+      const postMonthSliceEnd =
+        42 - (actualMonth.length + previousMonthSlice.length);
+      const postMonthSlice = postMonth.slice(postMonthStart, postMonthSliceEnd);
+
+      const allDays = previousMonthSlice
+        .concat(actualMonth)
+        .concat(postMonthSlice);
+
+      setDays(allDays);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date, monthNumber, habit, activeHabit]);
+
+  const handleDays = useCallback(
+    (
+      index: number,
+      isToday: boolean,
+      inFrequency: boolean,
+      markation: number,
+      isDeadend: boolean
+    ) => {
+      const newDays = [...days];
+
+      // if (isDeadend) {
+      //     setIsModalOpen(true);
+      // }
+
+      if (isToday && inFrequency && newDays[index].value !== markation) {
+        const userString = localStorage.getItem("habit_user") || "";
+        const user = JSON.parse(userString);
+
+        console.log("MARK USER", user);
+        console.log("MARK HABIT", habit);
+
+        api
+          .post(
+            `/users/${user.id}/goals/${habit.goal_id}/habits/${habit.id}/marks`,
+            { markation }
+          )
+          .then(() => {
+            swal(
+              "Parabéns",
+              `Aproveite sua recompensa da prática do seu hábito: ${habit.reward}`,
+              "success"
+            );
+            newDays[index].value = markation;
+            setDays(newDays);
+          })
+          .catch((err) => {
+            console.error(err);
+            swal(
+              "Ops",
+              `Ocorreu um erro ao salvar a marcação de seu hábito, por favor, tente mais tarde.`,
+              "error"
+            );
+          });
+      }
+    },
+    [days, habit]
+  );
+
+  const handleMarkationValueChange = useCallback(
+    (e: FormEvent) => {
+      if (habit?.base) {
+        const value = Number((e.target as HTMLInputElement).value);
+
+        if (value < 0) {
+          setMarkationValue(0);
+          return;
         }
-    }, [activeHabit, deadends, dispatch, goals]);
 
-    useEffect(() => {
-        console.log("habit", habit);
-        if (habit) {
-            console.log("LOOP DATE");
+        if (value > habit.base) {
+          setMarkationValue(habit.base);
+          return;
+        }
 
-            const doubleDigit = (num: number) => {
-                return `${num < 10 ? '0' + num : num}`;
+        setMarkationValue(value);
+      }
+    },
+    [habit]
+  );
+
+  const handleClosePopup = useCallback(
+    (index: number, isDeadend) => {
+      handleDays(index, true, true, markationValue, isDeadend);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [handleDays, markationValue]
+  );
+
+  const changeMonthNumber = useCallback(
+    (value) => {
+      const newDate = date;
+      newDate.setMonth(newDate.getMonth() + value);
+      setDate(newDate);
+      setMonthNumber(newDate.getMonth());
+    },
+    [date]
+  );
+
+  if (!habit || !deadends) {
+    return null;
+  }
+
+  return (
+    <Container className={props.className}>
+      <IconLeft onClick={() => changeMonthNumber(-1)} />
+      <section>
+        <h2>
+          {months[monthNumber].name} {date.getFullYear()}
+        </h2>
+        <ul>
+          <li>Sun</li>
+          <li>Mon</li>
+          <li>Tue</li>
+          <li>Wed</li>
+          <li>Thu</li>
+          <li>Fri</li>
+          <li>Sat</li>
+        </ul>
+        <CalendarContainer>
+          {days.map((day, index) => {
+            const isToday =
+              day.inMonth &&
+              day.position === date.getDate() &&
+              new Date().getMonth() === monthNumber &&
+              new Date().getFullYear() === date.getFullYear();
+
+            const handleDate = (dateString: string) => {
+              const deadendDate = new Date(dateString);
+
+              deadendDate.setHours(
+                deadendDate.getHours() +
+                  3 -
+                  deadendDate.getTimezoneOffset() / 60
+              );
+
+              return deadendDate;
             };
 
-            // @ts-ignore
-            const markedDays = habit.marks.map((mark: any) => ({
-                date: new Date(mark.createdAt).toLocaleDateString(),
-                markation: mark.markation
-            }));
+            const cleanHabitDate = handleDate(
+              new Date(habit.createdAt).toLocaleString()
+            );
+            const cleanDate = handleDate(
+              new Date(day.date).toLocaleDateString()
+            );
+            const cleanToday = handleDate(new Date().toLocaleDateString());
 
-            const setPosition = (position: number, month: number, inMonth: boolean) => {
-                const localeDate = `${doubleDigit(position)}/${doubleDigit(month)}/${monthSum(actualCalendar, -1) === 11 ? actualCalendar.getFullYear() - 1 : actualCalendar.getFullYear()}`;
-                const date = `${doubleDigit(month)}/${doubleDigit(position)}/${monthSum(actualCalendar, -1) === 11 ? actualCalendar.getFullYear() - 1 : actualCalendar.getFullYear()}`;
-                const mark = markedDays.length > 0 ? markedDays.find((mark: any) => mark.date === localeDate) || { markation: 0 } : { markation: 0 };
+            const inGoal =
+              cleanHabitDate <= cleanDate && cleanDate < cleanToday;
+            const isDeadend = !!deadends
+              .map((deadend: any) => {
+                const deadendDate = new Date(deadend.limit);
 
-                return {
-                    position,
-                    value: mark.markation,
-                    inMonth,
-                    date
-                };
+                deadendDate.setHours(
+                  deadendDate.getHours() +
+                    3 -
+                    deadendDate.getTimezoneOffset() / 60
+                );
+
+                return deadendDate;
+              })
+              .find((deadend: any) => {
+                return deadend.valueOf() === cleanDate.valueOf();
+              });
+
+            const inFrequency = habit.frequency.includes(index % 7);
+
+            if (isToday && habit.qualitative !== 1) {
+              return (
+                <Popup
+                  trigger={
+                    <CalendarItem
+                      value={day.value / habit.base}
+                      inMonth={day.inMonth}
+                      isToday={isToday}
+                      isDeadend={isDeadend}
+                      inGoal={inGoal}
+                      inFrequency={inFrequency}
+                    >
+                      {day.position}
+                    </CalendarItem>
+                  }
+                  onClose={() => handleClosePopup(index, isDeadend)}
+                  position={"top center"}
+                >
+                  <div
+                    style={{
+                      height: "100px",
+                      width: "100px",
+                      backgroundColor: "white",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <label>Base: {habit.base}</label>
+                    <input
+                      type="number"
+                      value={markationValue}
+                      onChange={handleMarkationValueChange}
+                      style={{
+                        width: "90%",
+                        margin: "1rem auto 0 auto",
+                      }}
+                    />
+                  </div>
+                </Popup>
+              );
             }
 
-            const actualCalendar = date;
-            const firstOfMonth = actualCalendar.getDay() - (actualCalendar.getDate() % 7) + 1 > 0 ? actualCalendar.getDay() - (actualCalendar.getDate() % 7) + 1 : actualCalendar.getDay() - (actualCalendar.getDate() % 7) + 7 + 1
-
-            const previousMonth = Array(months[monthSum(actualCalendar, -1)].count).fill(null)
-                .map((something, index) => index + 1)
-                .map((position: number) => setPosition(position, monthSum(actualCalendar, -1) + 1, false));
-            const actualMonth = Array(months[actualCalendar.getMonth()].count).fill(null)
-                .map((something, index) => index + 1)
-                .map((position: number) => setPosition(position, actualCalendar.getMonth() + 1, true));
-            const postMonth = Array(months[monthSum(actualCalendar, 1)].count).fill(null)
-                .map((something, index) => index + 1)
-                .map((position: number) => setPosition(position, monthSum(actualCalendar, 1) + 1, false));
-
-            const previousMonthStart = previousMonth.length - firstOfMonth;
-            const previousMonthEnd = firstOfMonth % 7 && previousMonth.length;
-            const previousMonthSlice = previousMonth.slice(previousMonthStart, previousMonthEnd);
-
-            const postMonthStart = 0;
-            const postMonthSliceEnd = 42 - (actualMonth.length + previousMonthSlice.length)
-            const postMonthSlice = postMonth.slice(postMonthStart, postMonthSliceEnd);
-
-            const allDays = previousMonthSlice.concat(actualMonth).concat(postMonthSlice);
-
-            setDays(allDays)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [date, monthNumber, habit, activeHabit]);
-
-
-    const handleDays = useCallback((index: number, isToday: boolean, inFrequency: boolean, markation: number, isDeadend: boolean) => {
-        const newDays = [...days];
-
-        // if (isDeadend) {
-        //     setIsModalOpen(true);
-        // }
-
-        if (isToday && inFrequency && newDays[index].value !== markation) {
-            const userString = localStorage.getItem('habit_user') || '';
-            const user = JSON.parse(userString);
-
-            console.log('MARK USER', user);
-            console.log('MARK HABIT', habit);
-
-
-            api
-                .post(`/users/${user.id}/goals/${habit.goal_id}/habits/${habit.id}/marks`, { markation })
-                .then(() => {
-                    swal("Parabéns", `Aproveite sua recompensa da prática do seu hábito: ${habit.reward}`, "success");
-                    newDays[index].value = markation;
-                    setDays(newDays);
-                })
-                .catch(err => {
-                    console.error(err);
-                    swal("Ops", `Ocorreu um erro ao salvar a marcação de seu hábito, por favor, tente mais tarde.`, "error");
-                });
-        }
-    }, [days, habit]);
-
-    const handleMarkationValueChange = useCallback((e: FormEvent) => {
-        if (habit?.base) {
-            const value = Number((e.target as HTMLInputElement).value);
-
-            if (value < 0) {
-                setMarkationValue(0);
-                return;
-            }
-
-            if (value > habit.base) {
-                setMarkationValue(habit.base);
-                return;
-            }
-
-            setMarkationValue(value);
-        }
-    }, [habit]);
-
-    const handleClosePopup = useCallback((index: number, isDeadend) => {
-        handleDays(index, true, true, markationValue, isDeadend);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [markationValue]);
-
-    const changeMonthNumber = useCallback((value) => {
-        const newDate = date;
-        newDate.setMonth(newDate.getMonth() + value);
-        setDate(newDate);
-        setMonthNumber(newDate.getMonth());
-    }, [date]);
-
-    if (!habit || !deadends) {
-        return null;
-    }
-
-    return (
-        <Container className={props.className}>
-            <IconLeft onClick={() => changeMonthNumber(-1)} />
-            <section>
-                <h2>{months[monthNumber].name} {date.getFullYear()}</h2>
-                <ul>
-                    <li>Sun</li>
-                    <li>Mon</li>
-                    <li>Tue</li>
-                    <li>Wed</li>
-                    <li>Thu</li>
-                    <li>Fri</li>
-                    <li>Sat</li>
-                </ul>
-                <CalendarContainer>
-                    {
-                        days.map((day, index) => {
-                            const isToday = day.inMonth && day.position === date.getDate() && new Date().getMonth() === monthNumber && new Date().getFullYear() === date.getFullYear();
-
-                            const handleDate = (dateString: string) => {
-                                const [deadendDay, deadendMonth, deadendYear] = dateString.split(' ')[0].split('/');
-                                return new Date(`${deadendMonth}/${deadendDay}/${deadendYear}`);
-                            }
-
-
-                            const cleanHabitDate = handleDate(new Date(habit.createdAt).toLocaleString());
-                            const cleanDate = handleDate(new Date(day.date).toLocaleDateString());
-                            const cleanToday = handleDate(new Date().toLocaleDateString());
-
-                            const inGoal = cleanHabitDate <= cleanDate && cleanDate < cleanToday;
-                            const isDeadend = !!deadends
-                                .map((deadend: any) => {
-                                    const [deadendYear, deadendMonth, rest] = deadend.limit.split('-');
-                                    const [deadendDay] = rest.split('T');
-                                    return new Date(`${deadendMonth}/${deadendDay}/${deadendYear}`);
-                                })
-                                .find((deadend: any) => {
-                                    return deadend.valueOf() === cleanDate.valueOf()
-                                });
-
-                            const inFrequency = habit.frequency.includes(index % 7);
-
-                            if (isToday && habit.qualitative !== 1) {
-                                return (
-                                    <Popup
-                                        trigger={
-                                            <CalendarItem
-                                                value={day.value / habit.base}
-                                                inMonth={day.inMonth}
-                                                isToday={isToday}
-                                                isDeadend={isDeadend}
-                                                inGoal={inGoal}
-                                                inFrequency={inFrequency}
-                                            >
-                                                {day.position}
-                                            </CalendarItem>
-                                        }
-                                        onClose={() => handleClosePopup(index, isDeadend)}
-                                        position={"top center"}
-                                    >
-                                        <div
-                                            style={{
-                                                height: '100px',
-                                                width: '100px',
-                                                backgroundColor: 'white',
-                                                display: 'flex',
-                                                flexDirection: 'column'
-                                            }}
-                                        >
-                                            <label>Base: {habit.base}</label>
-                                            <input
-                                                type="number"
-                                                value={markationValue}
-                                                onChange={handleMarkationValueChange}
-                                                style={{
-                                                    width: '90%',
-                                                    margin: '1rem auto 0 auto'
-                                                }}
-                                            />
-                                        </div>
-                                    </Popup>
-                                )
-                            }
-
-                            return (
-                                <CalendarItem
-                                    value={day.value}
-                                    inMonth={day.inMonth}
-                                    isToday={isToday}
-                                    isDeadend={isDeadend}
-                                    inGoal={inGoal}
-                                    inFrequency={inFrequency}
-                                    onClick={() => handleDays(index, isToday, inFrequency, 1, isDeadend)}
-                                >
-                                    {day.position}
-                                </CalendarItem>
-                            )
-                        })
-                    }
-                </CalendarContainer>
-                {/* <Modal
+            return (
+              <CalendarItem
+                value={day.value}
+                inMonth={day.inMonth}
+                isToday={isToday}
+                isDeadend={isDeadend}
+                inGoal={inGoal}
+                inFrequency={inFrequency}
+                onClick={() =>
+                  handleDays(index, isToday, inFrequency, 1, isDeadend)
+                }
+              >
+                {day.position}
+              </CalendarItem>
+            );
+          })}
+        </CalendarContainer>
+        {/* <Modal
                     isOpen={isModalOpen}
                     onRequestClose={() => setIsModalOpen(false)}
                     style={{
@@ -354,10 +445,10 @@ const Calendar: React.FC<Props> = props => {
                         </>
                     }
                 </Modal> */}
-            </section>
-            <IconRight onClick={() => changeMonthNumber(1)} />
-        </Container>
-    );
+      </section>
+      <IconRight onClick={() => changeMonthNumber(1)} />
+    </Container>
+  );
 };
 
 export default Calendar;
