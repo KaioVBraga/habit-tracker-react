@@ -47,6 +47,12 @@ const Calendar: React.FC<Props> = (props) => {
 
   const { activeHabit, goals } = useSelector((state: any) => state);
 
+  const handleTimezone = (inDate) => {
+    const date = new Date(inDate);
+
+    return date.toLocaleDateString("pt-br", { timeZone: "America/Sao_Paulo" });
+  };
+
   const monthSum = (someDate: Date, value: number) => {
     const newDate = new Date(someDate);
     newDate.setMonth(newDate.getMonth() + value);
@@ -87,7 +93,7 @@ const Calendar: React.FC<Props> = (props) => {
 
       // @ts-ignore
       const markedDays = habit.marks.map((mark: any) => ({
-        date: new Date(mark.createdAt).toLocaleDateString(),
+        date: handleTimezone(mark.createdAt),
         markation: mark.markation,
       }));
 
@@ -96,19 +102,18 @@ const Calendar: React.FC<Props> = (props) => {
         month: number,
         inMonth: boolean
       ) => {
-        const localeDate = `${doubleDigit(position)}/${doubleDigit(month)}/${
+        const localeDate = `${doubleDigit(month)}/${doubleDigit(position)}/${
           monthSum(actualCalendar, -1) === 11
             ? actualCalendar.getFullYear() - 1
             : actualCalendar.getFullYear()
         }`;
-        const date = `${doubleDigit(month)}/${doubleDigit(position)}/${
-          monthSum(actualCalendar, -1) === 11
-            ? actualCalendar.getFullYear() - 1
-            : actualCalendar.getFullYear()
-        }`;
+
         const mark =
           markedDays.length > 0
-            ? markedDays.find((mark: any) => mark.date === localeDate) || {
+            ? markedDays.find(
+                (mark: any) =>
+                  mark.date === handleTimezone(new Date(localeDate))
+              ) || {
                 markation: 0,
               }
             : { markation: 0 };
@@ -282,42 +287,16 @@ const Calendar: React.FC<Props> = (props) => {
               new Date().getMonth() === monthNumber &&
               new Date().getFullYear() === date.getFullYear();
 
-            const handleDate = (dateString: string) => {
-              const deadendDate = new Date(dateString);
-
-              deadendDate.setHours(
-                deadendDate.getHours() +
-                  3 -
-                  deadendDate.getTimezoneOffset() / 60
-              );
-
-              return deadendDate;
-            };
-
-            const cleanHabitDate = handleDate(
-              new Date(habit.createdAt).toLocaleString()
-            );
-            const cleanDate = handleDate(
-              new Date(day.date).toLocaleDateString()
-            );
-            const cleanToday = handleDate(new Date().toLocaleDateString());
+            const cleanHabitDate = handleTimezone(new Date(habit.createdAt));
+            const cleanDate = handleTimezone(new Date(day.date));
+            const cleanToday = handleTimezone(new Date());
 
             const inGoal =
               cleanHabitDate <= cleanDate && cleanDate < cleanToday;
             const isDeadend = !!deadends
-              .map((deadend: any) => {
-                const deadendDate = new Date(deadend.limit);
-
-                deadendDate.setHours(
-                  deadendDate.getHours() +
-                    3 -
-                    deadendDate.getTimezoneOffset() / 60
-                );
-
-                return deadendDate;
-              })
+              .map((deadend: any) => handleTimezone(new Date(deadend.limit)))
               .find((deadend: any) => {
-                return deadend.valueOf() === cleanDate.valueOf();
+                return deadend === cleanDate;
               });
 
             const inFrequency = habit.frequency.includes(index % 7);
