@@ -48,9 +48,17 @@ const Calendar: React.FC<Props> = (props) => {
   const { activeHabit, goals } = useSelector((state: any) => state);
 
   const handleTimezone = (inDate) => {
+    console.log("IN DATE", inDate);
+
     const date = new Date(inDate);
 
-    return date.toLocaleDateString("pt-br", { timeZone: "America/Sao_Paulo" });
+    const dateResponse = date.toLocaleDateString("pt-br", {
+      timeZone: "America/Sao_Paulo",
+    });
+
+    console.log("DATE RESPONSE", dateResponse);
+
+    return dateResponse;
   };
 
   const monthSum = (someDate: Date, value: number) => {
@@ -293,6 +301,19 @@ const Calendar: React.FC<Props> = (props) => {
 
             const inGoal =
               cleanHabitDate <= cleanDate && cleanDate < cleanToday;
+
+            console.log("CLEAN HABIT DATE", cleanHabitDate);
+            console.log("CLEAN DATE", cleanDate);
+            console.log("CLEAN TODAY", cleanToday);
+            console.log(
+              "cleanHabitDate <= cleanDate",
+              cleanHabitDate <= cleanDate
+            );
+            console.log("cleanDate < cleanToday", cleanDate < cleanToday);
+
+            console.log("DAY", day);
+            console.log("IN GOAL", inGoal);
+
             const isDeadend = !!deadends
               .map((deadend: any) => handleTimezone(new Date(deadend.limit)))
               .find((deadend: any) => {
@@ -300,6 +321,8 @@ const Calendar: React.FC<Props> = (props) => {
               });
 
             const inFrequency = habit.frequency.includes(index % 7);
+
+            console.log("DAY", day);
 
             if (isToday && habit.qualitative !== 1) {
               return (
