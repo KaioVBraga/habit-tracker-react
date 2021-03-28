@@ -48,7 +48,7 @@ const Calendar: React.FC<Props> = (props) => {
   const { activeHabit, goals } = useSelector((state: any) => state);
 
   const handleTimezone = (inDate) => {
-    console.log("IN DATE", inDate);
+    // console.log("IN DATE", inDate);
 
     const date = new Date(inDate);
 
@@ -56,7 +56,7 @@ const Calendar: React.FC<Props> = (props) => {
       timeZone: "America/Sao_Paulo",
     });
 
-    console.log("DATE RESPONSE", dateResponse);
+    // console.log("DATE RESPONSE", dateResponse);
 
     return dateResponse;
   };
@@ -91,9 +91,9 @@ const Calendar: React.FC<Props> = (props) => {
   }, [activeHabit, deadends, dispatch, goals]);
 
   useEffect(() => {
-    console.log("habit", habit);
+    // console.log("habit", habit);
     if (habit) {
-      console.log("LOOP DATE");
+      // console.log("LOOP DATE");
 
       const doubleDigit = (num: number) => {
         return `${num < 10 ? "0" + num : num}`;
@@ -130,7 +130,7 @@ const Calendar: React.FC<Props> = (props) => {
           position,
           value: mark.markation,
           inMonth,
-          date,
+          date: new Date(localeDate),
         };
       };
 
@@ -198,8 +198,8 @@ const Calendar: React.FC<Props> = (props) => {
         const userString = localStorage.getItem("habit_user") || "";
         const user = JSON.parse(userString);
 
-        console.log("MARK USER", user);
-        console.log("MARK HABIT", habit);
+        // console.log("MARK USER", user);
+        // console.log("MARK HABIT", habit);
 
         api
           .post(
@@ -302,6 +302,7 @@ const Calendar: React.FC<Props> = (props) => {
             const inGoal =
               cleanHabitDate <= cleanDate && cleanDate < cleanToday;
 
+            console.log("DAY DATE", day.date);
             console.log("CLEAN HABIT DATE", cleanHabitDate);
             console.log("CLEAN DATE", cleanDate);
             console.log("CLEAN TODAY", cleanToday);
@@ -311,8 +312,8 @@ const Calendar: React.FC<Props> = (props) => {
             );
             console.log("cleanDate < cleanToday", cleanDate < cleanToday);
 
-            console.log("DAY", day);
-            console.log("IN GOAL", inGoal);
+            // console.log("DAY", day);
+            // console.log("IN GOAL", inGoal);
 
             const isDeadend = !!deadends
               .map((deadend: any) => handleTimezone(new Date(deadend.limit)))
@@ -322,7 +323,9 @@ const Calendar: React.FC<Props> = (props) => {
 
             const inFrequency = habit.frequency.includes(index % 7);
 
-            console.log("DAY", day);
+            console.log("DAY ITEM", day);
+            console.log("IN GOAL", inGoal);
+            console.log("IN FREQUENCY", inFrequency);
 
             if (isToday && habit.qualitative !== 1) {
               return (
