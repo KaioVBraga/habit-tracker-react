@@ -58,7 +58,7 @@ const Calendar: React.FC<Props> = (props) => {
 
     // console.log("DATE RESPONSE", dateResponse);
 
-    return dateResponse;
+    return { date, brasil: dateResponse };
   };
 
   const monthSum = (someDate: Date, value: number) => {
@@ -101,7 +101,7 @@ const Calendar: React.FC<Props> = (props) => {
 
       // @ts-ignore
       const markedDays = habit.marks.map((mark: any) => ({
-        date: handleTimezone(mark.createdAt),
+        date: handleTimezone(mark.createdAt).brasil,
         markation: mark.markation,
       }));
 
@@ -120,7 +120,7 @@ const Calendar: React.FC<Props> = (props) => {
           markedDays.length > 0
             ? markedDays.find(
                 (mark: any) =>
-                  mark.date === handleTimezone(new Date(localeDate))
+                  mark.date === handleTimezone(new Date(localeDate)).brasil
               ) || {
                 markation: 0,
               }
@@ -300,32 +300,37 @@ const Calendar: React.FC<Props> = (props) => {
             const cleanToday = handleTimezone(new Date());
 
             const inGoal =
-              cleanHabitDate <= cleanDate && cleanDate < cleanToday;
-
-            console.log("DAY DATE", day.date);
-            console.log("CLEAN HABIT DATE", cleanHabitDate);
-            console.log("CLEAN DATE", cleanDate);
-            console.log("CLEAN TODAY", cleanToday);
-            console.log(
-              "cleanHabitDate <= cleanDate",
-              cleanHabitDate <= cleanDate
-            );
-            console.log("cleanDate < cleanToday", cleanDate < cleanToday);
+              cleanHabitDate.date.valueOf() <= cleanDate.date.valueOf() &&
+              cleanDate.date.valueOf() < cleanToday.date.valueOf();
 
             // console.log("DAY", day);
             // console.log("IN GOAL", inGoal);
 
             const isDeadend = !!deadends
-              .map((deadend: any) => handleTimezone(new Date(deadend.limit)))
+              .map(
+                (deadend: any) => handleTimezone(new Date(deadend.limit)).brasil
+              )
               .find((deadend: any) => {
                 return deadend === cleanDate;
               });
 
             const inFrequency = habit.frequency.includes(index % 7);
 
-            console.log("DAY ITEM", day);
-            console.log("IN GOAL", inGoal);
-            console.log("IN FREQUENCY", inFrequency);
+            if (inGoal) {
+              console.log("DAY DATE", day.date);
+              console.log("CLEAN HABIT DATE", cleanHabitDate);
+              console.log("CLEAN DATE", cleanDate);
+              console.log("CLEAN TODAY", cleanToday);
+              console.log(
+                "cleanHabitDate <= cleanDate",
+                cleanHabitDate <= cleanDate
+              );
+              console.log("cleanDate < cleanToday", cleanDate < cleanToday);
+
+              console.log("DAY ITEM", day);
+              console.log("IN GOAL", inGoal);
+              console.log("IN FREQUENCY", inFrequency);
+            }
 
             if (isToday && habit.qualitative !== 1) {
               return (
