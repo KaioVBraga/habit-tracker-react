@@ -298,15 +298,11 @@ const Calendar: React.FC<Props> = (props) => {
         </ul>
         <CalendarContainer>
           {days.map((day, index) => {
-            const isToday =
-              day.inMonth &&
-              day.position === date.getDate() &&
-              new Date().getMonth() === monthNumber &&
-              new Date().getFullYear() === date.getFullYear();
-
             const cleanHabitDate = handleTimezone(new Date(habit.createdAt));
             const cleanDate = handleTimezone(new Date(day.date));
             const cleanToday = handleTimezone(new Date());
+
+            const isToday = cleanToday.brasil === cleanDate.brasil;
 
             const inGoal =
               cleanHabitDate.date.valueOf() <= cleanDate.date.valueOf() &&
