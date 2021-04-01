@@ -63,8 +63,11 @@ const Calendar: React.FC<Props> = (props) => {
 
   const monthSum = (someDate: Date, value: number) => {
     const newDate = new Date(someDate);
-    newDate.setMonth(newDate.getMonth() + value);
-    return newDate.getMonth();
+    const [, month] = handleTimezone(newDate).brasil.split("/");
+
+    const opMonth = month - 1;
+
+    return (12 + opMonth + (value % 12)) % 12;
   };
 
   useEffect(() => {
@@ -126,6 +129,8 @@ const Calendar: React.FC<Props> = (props) => {
               }
             : { markation: 0 };
 
+        console.log("LOCALE DATE", localeDate);
+
         return {
           position,
           value: mark.markation,
@@ -146,11 +151,11 @@ const Calendar: React.FC<Props> = (props) => {
         .map((position: number) =>
           setPosition(position, monthSum(actualCalendar, -1) + 1, false)
         );
-      const actualMonth = Array(months[actualCalendar.getMonth()].count)
+      const actualMonth = Array(months[monthSum(actualCalendar, 0)].count)
         .fill(null)
         .map((something, index) => index + 1)
         .map((position: number) =>
-          setPosition(position, actualCalendar.getMonth() + 1, true)
+          setPosition(position, monthSum(actualCalendar, 0) + 1, true)
         );
       const postMonth = Array(months[monthSum(actualCalendar, 1)].count)
         .fill(null)
@@ -158,6 +163,10 @@ const Calendar: React.FC<Props> = (props) => {
         .map((position: number) =>
           setPosition(position, monthSum(actualCalendar, 1) + 1, false)
         );
+
+      console.log("ACTUAL CALENDAR PREVIOUS", monthSum(actualCalendar, -1));
+      console.log("ACTUAL CALENDAR ACTUAL", monthSum(actualCalendar, 0));
+      console.log("ACTUAL CALENDAR NEXT", monthSum(actualCalendar, 1));
 
       const previousMonthStart = previousMonth.length - firstOfMonth;
       const previousMonthEnd = firstOfMonth % 7 && previousMonth.length;
@@ -306,12 +315,22 @@ const Calendar: React.FC<Props> = (props) => {
             // console.log("DAY", day);
             // console.log("IN GOAL", inGoal);
 
+            console.log("DAY DATE", day.date);
+            console.log("CLEAN DATE", cleanDate);
+
+            console.log(
+              "DADENDS",
+              deadends.map(
+                (deadend: any) => handleTimezone(new Date(deadend.limit)).brasil
+              )
+            );
+
             const isDeadend = !!deadends
               .map(
                 (deadend: any) => handleTimezone(new Date(deadend.limit)).brasil
               )
               .find((deadend: any) => {
-                return deadend === cleanDate;
+                return deadend === cleanDate.brasil;
               });
 
             const inFrequency = habit.frequency.includes(index % 7);
