@@ -85,7 +85,7 @@ export const GoalItem = styled.li<GoalItemProps>`
     width: 100%;
     background-color: ${(props) =>
       props.goalSelected
-        ? lighten("0.1", "#686868")
+        ? lighten("0.35", "#474747")
         : lighten("0.3", "#686868")};
   }
 `;
