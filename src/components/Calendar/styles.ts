@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { darken } from "polished";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 
 export const Container = styled.div`
@@ -100,7 +101,10 @@ export const CalendarItem = styled.div<CalendarItemProps>`
       return "#ffffff";
     }
   }};
-  cursor: ${(props) => (props.inMonth ? "pointer" : "default")};
+  cursor: ${(props) =>
+    props.isToday && props.inFrequency && props.value === 0
+      ? "pointer"
+      : "default"};
   transition: all 0.15s ease-in-out;
   display: flex;
   justify-content: center;
@@ -108,7 +112,11 @@ export const CalendarItem = styled.div<CalendarItemProps>`
   user-select: none;
 
   &:hover {
-    background-color: ${(props) => props.inMonth && "#bababa"};
+    background-color: ${(props) =>
+      props.isToday &&
+      props.inFrequency &&
+      props.value === 0 &&
+      darken("0.05", "#6868ce")};
   }
 `;
 
