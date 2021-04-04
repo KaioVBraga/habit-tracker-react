@@ -5,15 +5,17 @@ import Popup from "reactjs-popup";
 import {
   Container,
   CalendarContainer,
-  CalendarItem,
   IconLeft,
   IconRight,
   Tooltip,
 } from "./styles";
 import api from "../../services/api";
+import { handleTimezone } from "../../services/utils";
 import swal from "sweetalert";
 import { useSelector, useDispatch } from "react-redux";
 import { changeActiveHabitState } from "../../redux/ducks/activeHabit";
+
+import CalendarItem from "../CalendarItem";
 
 interface Props {
   className?: string;
@@ -47,20 +49,6 @@ const Calendar: React.FC<Props> = (props) => {
   // const [continueGoal, setContinueGoal] = [...useState('')];
 
   const { activeHabit, goals } = useSelector((state: any) => state);
-
-  const handleTimezone = (inDate) => {
-    // console.log("IN DATE", inDate);
-
-    const date = new Date(inDate);
-
-    const dateResponse = date.toLocaleDateString("pt-br", {
-      timeZone: "America/Sao_Paulo",
-    });
-
-    // console.log("DATE RESPONSE", dateResponse);
-
-    return { date, brasil: dateResponse };
-  };
 
   const monthSum = (someDate: Date, value: number) => {
     const newDate = new Date(someDate);
@@ -299,241 +287,16 @@ const Calendar: React.FC<Props> = (props) => {
         </ul>
         <CalendarContainer>
           {days.map((day, index) => {
-            const cleanHabitDate = handleTimezone(new Date(habit.createdAt));
-            const cleanDate = handleTimezone(new Date(day.date));
-            const cleanToday = handleTimezone(new Date());
-
-            const isToday = cleanToday.brasil === cleanDate.brasil;
-
-            const inGoal =
-              cleanHabitDate.date.valueOf() <= cleanDate.date.valueOf() &&
-              cleanDate.date.valueOf() < cleanToday.date.valueOf();
-
-            // console.log("DAY", day);
-            // console.log("IN GOAL", inGoal);
-
-            console.log("DAY DATE", day.date);
-            console.log("CLEAN DATE", cleanDate);
-
-            console.log(
-              "DADENDS",
-              deadends.map(
-                (deadend: any) => handleTimezone(new Date(deadend.limit)).brasil
-              )
-            );
-
-            const isDeadend = !!deadends
-              .map(
-                (deadend: any) => handleTimezone(new Date(deadend.limit)).brasil
-              )
-              .find((deadend: any) => {
-                return deadend === cleanDate.brasil;
-              });
-
-            const inFrequency = habit.frequency.includes(index % 7);
-
-            if (inGoal) {
-              console.log("DAY DATE", day.date);
-              console.log("CLEAN HABIT DATE", cleanHabitDate);
-              console.log("CLEAN DATE", cleanDate);
-              console.log("CLEAN TODAY", cleanToday);
-              console.log(
-                "cleanHabitDate <= cleanDate",
-                cleanHabitDate <= cleanDate
-              );
-              console.log("cleanDate < cleanToday", cleanDate < cleanToday);
-
-              console.log("DAY ITEM", day);
-              console.log("IN GOAL", inGoal);
-              console.log("IN FREQUENCY", inFrequency);
-            }
-
-            if (isToday && habit.qualitative !== 1) {
-              return (
-                <Popup
-                  trigger={
-                    <div>
-                      <Popup
-                        trigger={
-                          <CalendarItem
-                            value={day.value / habit.base}
-                            inMonth={day.inMonth}
-                            isToday={isToday}
-                            isDeadend={isDeadend}
-                            inGoal={inGoal}
-                            inFrequency={inFrequency}
-                          >
-                            {day.position}
-                          </CalendarItem>
-                        }
-                        onClose={() => handleClosePopup(index, isDeadend)}
-                        position={"top center"}
-                      >
-                        <div
-                          style={{
-                            height: "100px",
-                            width: "100px",
-                            backgroundColor: "white",
-                            display: "flex",
-                            flexDirection: "column",
-                          }}
-                        >
-                          <label>Base: {habit.base}</label>
-                          <input
-                            type="number"
-                            value={markationValue}
-                            onChange={handleMarkationValueChange}
-                            style={{
-                              width: "90%",
-                              margin: "1rem auto 0 auto",
-                            }}
-                          />
-                        </div>
-                      </Popup>
-                    </div>
-                  }
-                  on={["hover"]}
-                  position={"top center"}
-                >
-                  <Tooltip>Marcar como feito</Tooltip>
-                </Popup>
-              );
-            }
-
-            if (isToday && !day.value) {
-              if (habit.qualitative !== 1) {
-                return (
-                  <Popup
-                    trigger={
-                      <div>
-                        <Popup
-                          trigger={
-                            <CalendarItem
-                              value={day.value / habit.base}
-                              inMonth={day.inMonth}
-                              isToday={isToday}
-                              isDeadend={isDeadend}
-                              inGoal={inGoal}
-                              inFrequency={inFrequency}
-                            >
-                              {day.position}
-                            </CalendarItem>
-                          }
-                          onClose={() => handleClosePopup(index, isDeadend)}
-                          position={"top center"}
-                        >
-                          <div
-                            style={{
-                              height: "100px",
-                              width: "100px",
-                              backgroundColor: "white",
-                              display: "flex",
-                              flexDirection: "column",
-                            }}
-                          >
-                            <label>Base: {habit.base}</label>
-                            <input
-                              type="number"
-                              value={markationValue}
-                              onChange={handleMarkationValueChange}
-                              style={{
-                                width: "90%",
-                                margin: "1rem auto 0 auto",
-                              }}
-                            />
-                          </div>
-                        </Popup>
-                      </div>
-                    }
-                    on={["hover"]}
-                    position={"top center"}
-                  >
-                    <Tooltip>Marcar como feito</Tooltip>
-                  </Popup>
-                );
-              }
-
-              if (isToday && habit.qualitative !== 1) {
-                return (
-                  <Popup
-                    trigger={
-                      <CalendarItem
-                        value={day.value / habit.base}
-                        inMonth={day.inMonth}
-                        isToday={isToday}
-                        isDeadend={isDeadend}
-                        inGoal={inGoal}
-                        inFrequency={inFrequency}
-                      >
-                        {day.position}
-                      </CalendarItem>
-                    }
-                    onClose={() => handleClosePopup(index, isDeadend)}
-                    position={"top center"}
-                  >
-                    <div
-                      style={{
-                        height: "100px",
-                        width: "100px",
-                        backgroundColor: "white",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <label>Base: {habit.base}</label>
-                      <input
-                        type="number"
-                        value={markationValue}
-                        onChange={handleMarkationValueChange}
-                        style={{
-                          width: "90%",
-                          margin: "1rem auto 0 auto",
-                        }}
-                      />
-                    </div>
-                  </Popup>
-                );
-              }
-
-              return (
-                <Popup
-                  trigger={
-                    <CalendarItem
-                      value={day.value}
-                      inMonth={day.inMonth}
-                      isToday={isToday}
-                      isDeadend={isDeadend}
-                      inGoal={inGoal}
-                      inFrequency={inFrequency}
-                      onClick={() =>
-                        handleDays(index, isToday, inFrequency, 1, isDeadend)
-                      }
-                    >
-                      {day.position}
-                    </CalendarItem>
-                  }
-                  on={["hover"]}
-                  position={"top center"}
-                >
-                  <Tooltip>Marcar como feito</Tooltip>
-                </Popup>
-              );
-            }
-
             return (
               <CalendarItem
-                value={day.value}
-                inMonth={day.inMonth}
-                isToday={isToday}
-                isDeadend={isDeadend}
-                inGoal={inGoal}
-                inFrequency={inFrequency}
-                onClick={() =>
-                  handleDays(index, isToday, inFrequency, 1, isDeadend)
-                }
-              >
-                {day.position}
-              </CalendarItem>
+                habit={habit}
+                day={day}
+                deadends={deadends}
+                handleClosePopup={handleClosePopup}
+                handleMarkationValueChange={handleMarkationValueChange}
+                inFrequency={habit.frequency.includes(index % 7)}
+                markationValue={markationValue}
+              />
             );
           })}
         </CalendarContainer>
