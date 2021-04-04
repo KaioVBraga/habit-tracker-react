@@ -8,6 +8,7 @@ import { handleTimezone } from "../../services/utils";
 interface Props {
   habit: any;
   day: any;
+  handleDays: any;
   handleClosePopup: any;
   handleMarkationValueChange: any;
   inFrequency: boolean;
@@ -18,6 +19,7 @@ const Calendar: React.FC<Props> = ({
   habit,
   day,
   deadends,
+  handleDays,
   handleClosePopup,
   handleMarkationValueChange,
   inFrequency,
@@ -33,37 +35,11 @@ const Calendar: React.FC<Props> = ({
     cleanHabitDate.date.valueOf() <= cleanDate.date.valueOf() &&
     cleanDate.date.valueOf() < cleanToday.date.valueOf();
 
-  // console.log("DAY", day);
-  // console.log("IN GOAL", inGoal);
-
-  console.log("DAY DATE", day.date);
-  console.log("CLEAN DATE", cleanDate);
-
-  console.log(
-    "DADENDS",
-    deadends.map(
-      (deadend: any) => handleTimezone(new Date(deadend.limit)).brasil
-    )
-  );
-
   const isDeadend = !!deadends
     .map((deadend: any) => handleTimezone(new Date(deadend.limit)).brasil)
     .find((deadend: any) => {
       return deadend === cleanDate.brasil;
     });
-
-  if (inGoal) {
-    console.log("DAY DATE", day.date);
-    console.log("CLEAN HABIT DATE", cleanHabitDate);
-    console.log("CLEAN DATE", cleanDate);
-    console.log("CLEAN TODAY", cleanToday);
-    console.log("cleanHabitDate <= cleanDate", cleanHabitDate <= cleanDate);
-    console.log("cleanDate < cleanToday", cleanDate < cleanToday);
-
-    console.log("DAY ITEM", day);
-    console.log("IN GOAL", inGoal);
-    console.log("IN FREQUENCY", inFrequency);
-  }
 
   if (isToday && habit.qualitative !== 1) {
     return (
@@ -83,7 +59,7 @@ const Calendar: React.FC<Props> = ({
                   {day.position}
                 </CalendarItem>
               }
-              onClose={() => handleClosePopup(index, isDeadend)}
+              onClose={handleClosePopup}
               position={"top center"}
             >
               <div
@@ -136,7 +112,7 @@ const Calendar: React.FC<Props> = ({
                     {day.position}
                   </CalendarItem>
                 }
-                onClose={() => handleClosePopup(index, isDeadend)}
+                onClose={handleClosePopup}
                 position={"top center"}
               >
                 <div
@@ -185,7 +161,7 @@ const Calendar: React.FC<Props> = ({
               {day.position}
             </CalendarItem>
           }
-          onClose={() => handleClosePopup(index, isDeadend)}
+          onClose={handleClosePopup}
           position={"top center"}
         >
           <div
@@ -222,9 +198,7 @@ const Calendar: React.FC<Props> = ({
             isDeadend={isDeadend}
             inGoal={inGoal}
             inFrequency={inFrequency}
-            onClick={() =>
-              handleDays(index, isToday, inFrequency, 1, isDeadend)
-            }
+            onClick={handleDays}
           >
             {day.position}
           </CalendarItem>
@@ -245,7 +219,7 @@ const Calendar: React.FC<Props> = ({
       isDeadend={isDeadend}
       inGoal={inGoal}
       inFrequency={inFrequency}
-      onClick={() => handleDays(index, isToday, inFrequency, 1, isDeadend)}
+      onClick={handleDays}
     >
       {day.position}
     </CalendarItem>

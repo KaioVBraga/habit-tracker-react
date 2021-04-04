@@ -287,14 +287,37 @@ const Calendar: React.FC<Props> = (props) => {
         </ul>
         <CalendarContainer>
           {days.map((day, index) => {
+            const cleanHabitDate = handleTimezone(new Date(habit.createdAt));
+            const cleanDate = handleTimezone(new Date(day.date));
+            const cleanToday = handleTimezone(new Date());
+
+            const isToday = cleanToday.brasil === cleanDate.brasil;
+
+            const inGoal =
+              cleanHabitDate.date.valueOf() <= cleanDate.date.valueOf() &&
+              cleanDate.date.valueOf() < cleanToday.date.valueOf();
+
+            const isDeadend = !!deadends
+              .map(
+                (deadend: any) => handleTimezone(new Date(deadend.limit)).brasil
+              )
+              .find((deadend: any) => {
+                return deadend === cleanDate.brasil;
+              });
+
+            const inFrequency = habit.frequency.includes(index % 7);
+
             return (
               <CalendarItem
                 habit={habit}
                 day={day}
                 deadends={deadends}
-                handleClosePopup={handleClosePopup}
+                handleClosePopup={() => handleClosePopup(index, isDeadend)}
                 handleMarkationValueChange={handleMarkationValueChange}
-                inFrequency={habit.frequency.includes(index % 7)}
+                handleDays={() =>
+                  handleDays(index, isToday, inFrequency, 1, isDeadend)
+                }
+                inFrequency={inFrequency}
                 markationValue={markationValue}
               />
             );
