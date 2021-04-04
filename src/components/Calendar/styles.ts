@@ -131,3 +131,13 @@ export const IconRight = styled(BsChevronRight)`
   margin: 64px 0 0 16px;
   cursor: pointer;
 `;
+
+export const Tooltip = styled.div`
+  height: 100px;
+  width: 100px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #cecece;
+  padding: 5px;
+`;

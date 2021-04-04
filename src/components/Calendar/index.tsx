@@ -8,6 +8,7 @@ import {
   CalendarItem,
   IconLeft,
   IconRight,
+  Tooltip,
 } from "./styles";
 import api from "../../services/api";
 import swal from "sweetalert";
@@ -351,40 +352,170 @@ const Calendar: React.FC<Props> = (props) => {
               return (
                 <Popup
                   trigger={
+                    <div>
+                      <Popup
+                        trigger={
+                          <CalendarItem
+                            value={day.value / habit.base}
+                            inMonth={day.inMonth}
+                            isToday={isToday}
+                            isDeadend={isDeadend}
+                            inGoal={inGoal}
+                            inFrequency={inFrequency}
+                          >
+                            {day.position}
+                          </CalendarItem>
+                        }
+                        onClose={() => handleClosePopup(index, isDeadend)}
+                        position={"top center"}
+                      >
+                        <div
+                          style={{
+                            height: "100px",
+                            width: "100px",
+                            backgroundColor: "white",
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <label>Base: {habit.base}</label>
+                          <input
+                            type="number"
+                            value={markationValue}
+                            onChange={handleMarkationValueChange}
+                            style={{
+                              width: "90%",
+                              margin: "1rem auto 0 auto",
+                            }}
+                          />
+                        </div>
+                      </Popup>
+                    </div>
+                  }
+                  on={["hover"]}
+                  position={"top center"}
+                >
+                  <Tooltip>Marcar como feito</Tooltip>
+                </Popup>
+              );
+            }
+
+            if (isToday && !day.value) {
+              if (habit.qualitative !== 1) {
+                return (
+                  <Popup
+                    trigger={
+                      <div>
+                        <Popup
+                          trigger={
+                            <CalendarItem
+                              value={day.value / habit.base}
+                              inMonth={day.inMonth}
+                              isToday={isToday}
+                              isDeadend={isDeadend}
+                              inGoal={inGoal}
+                              inFrequency={inFrequency}
+                            >
+                              {day.position}
+                            </CalendarItem>
+                          }
+                          onClose={() => handleClosePopup(index, isDeadend)}
+                          position={"top center"}
+                        >
+                          <div
+                            style={{
+                              height: "100px",
+                              width: "100px",
+                              backgroundColor: "white",
+                              display: "flex",
+                              flexDirection: "column",
+                            }}
+                          >
+                            <label>Base: {habit.base}</label>
+                            <input
+                              type="number"
+                              value={markationValue}
+                              onChange={handleMarkationValueChange}
+                              style={{
+                                width: "90%",
+                                margin: "1rem auto 0 auto",
+                              }}
+                            />
+                          </div>
+                        </Popup>
+                      </div>
+                    }
+                    on={["hover"]}
+                    position={"top center"}
+                  >
+                    <Tooltip>Marcar como feito</Tooltip>
+                  </Popup>
+                );
+              }
+
+              if (isToday && habit.qualitative !== 1) {
+                return (
+                  <Popup
+                    trigger={
+                      <CalendarItem
+                        value={day.value / habit.base}
+                        inMonth={day.inMonth}
+                        isToday={isToday}
+                        isDeadend={isDeadend}
+                        inGoal={inGoal}
+                        inFrequency={inFrequency}
+                      >
+                        {day.position}
+                      </CalendarItem>
+                    }
+                    onClose={() => handleClosePopup(index, isDeadend)}
+                    position={"top center"}
+                  >
+                    <div
+                      style={{
+                        height: "100px",
+                        width: "100px",
+                        backgroundColor: "white",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
+                      <label>Base: {habit.base}</label>
+                      <input
+                        type="number"
+                        value={markationValue}
+                        onChange={handleMarkationValueChange}
+                        style={{
+                          width: "90%",
+                          margin: "1rem auto 0 auto",
+                        }}
+                      />
+                    </div>
+                  </Popup>
+                );
+              }
+
+              return (
+                <Popup
+                  trigger={
                     <CalendarItem
-                      value={day.value / habit.base}
+                      value={day.value}
                       inMonth={day.inMonth}
                       isToday={isToday}
                       isDeadend={isDeadend}
                       inGoal={inGoal}
                       inFrequency={inFrequency}
+                      onClick={() =>
+                        handleDays(index, isToday, inFrequency, 1, isDeadend)
+                      }
                     >
                       {day.position}
                     </CalendarItem>
                   }
-                  onClose={() => handleClosePopup(index, isDeadend)}
+                  on={["hover"]}
                   position={"top center"}
                 >
-                  <div
-                    style={{
-                      height: "100px",
-                      width: "100px",
-                      backgroundColor: "white",
-                      display: "flex",
-                      flexDirection: "column",
-                    }}
-                  >
-                    <label>Base: {habit.base}</label>
-                    <input
-                      type="number"
-                      value={markationValue}
-                      onChange={handleMarkationValueChange}
-                      style={{
-                        width: "90%",
-                        margin: "1rem auto 0 auto",
-                      }}
-                    />
-                  </div>
+                  <Tooltip>Marcar como feito</Tooltip>
                 </Popup>
               );
             }
