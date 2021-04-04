@@ -43,6 +43,7 @@ export const Container = styled.aside`
 
 interface GoalItemProps {
   active?: boolean;
+  goalSelected?: boolean;
 }
 
 export const GoalItem = styled.li<GoalItemProps>`
@@ -51,7 +52,6 @@ export const GoalItem = styled.li<GoalItemProps>`
   width: 100%;
   cursor: pointer;
   user-select: none;
-  padding: 1rem 1rem 0rem 1rem;
 
   border-bottom: 1px solid #bbb;
   transition: 0.15s all ease-in-out;
@@ -81,7 +81,12 @@ export const GoalItem = styled.li<GoalItemProps>`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    padding-bottom: 1rem;
+    padding: 1rem;
+    width: 100%;
+    background-color: ${(props) =>
+      props.goalSelected
+        ? lighten("0.1", "#686868")
+        : lighten("0.3", "#686868")};
   }
 `;
 
@@ -91,7 +96,6 @@ interface HabitItemProps {
 
 export const HabitItem = styled.li<HabitItemProps>`
   position: relative;
-  margin: 0rem -1rem 0rem -1rem;
   border-top: 1px solid #cecece;
   padding: 0.8rem 1rem;
   min-height: 4.8rem;
