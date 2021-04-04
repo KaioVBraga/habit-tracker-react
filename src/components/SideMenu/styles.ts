@@ -58,6 +58,7 @@ export const GoalItem = styled.li<GoalItemProps>`
 
   color: ${(props) => props.active && "#fff"};
   background-color: ${(props) => props.active && lighten("0.3", "#686868")};
+  margin-bottom: 1rem;
 
   &:hover {
     color: #fff;
