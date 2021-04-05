@@ -19,6 +19,10 @@ export const Container = styled.div`
 export const Header = styled.div`
   width: 100%;
   height: max-content;
+
+  & > h1 {
+    margin-bottom: 10px;
+  }
 `;
 
 export const HabitsContainer = styled.div`

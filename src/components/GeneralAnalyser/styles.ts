@@ -20,7 +20,7 @@ export const GoalContainer = styled.div`
   width: 100%;
   height: max-content;
 
-  & > h1 {
+  & > h2 {
     cursor: pointer;
   }
 `;

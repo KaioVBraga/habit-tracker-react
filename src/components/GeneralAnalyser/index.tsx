@@ -101,9 +101,10 @@ const GoalAnalyser: React.FC<Props> = (props) => {
 
   return (
     <Container>
+      <h1>Overview de metas</h1>
       {allGoals.map((goal, index) => (
         <GoalContainer>
-          <h1 onClick={() => handleActiveGoal(index)}>{goal.title}</h1>
+          <h2 onClick={() => handleActiveGoal(index)}>{goal.title}</h2>
           <p>{goal.description}</p>
 
           <ProgressContainer>

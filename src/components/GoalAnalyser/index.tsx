@@ -91,12 +91,21 @@ const GoalAnalyser: React.FC<Props> = (props) => {
 
       const orderedHabits = [...newGoal.habits];
 
-      const newBestHabit = orderedHabits.sort(
-        (a, b) => b.statistics.totalPercentage - a.statistics.totalPercentage
-      )[0];
-      const newWorstHabit = orderedHabits.sort(
-        (a, b) => a.statistics.totalPercentage - b.statistics.totalPercentage
-      )[0];
+      const newBestHabit =
+        orderedHabits.length > 1
+          ? orderedHabits.sort(
+              (a, b) =>
+                b.statistics.totalPercentage - a.statistics.totalPercentage
+            )[0]
+          : null;
+
+      const newWorstHabit =
+        orderedHabits.length > 1
+          ? orderedHabits.sort(
+              (a, b) =>
+                a.statistics.totalPercentage - b.statistics.totalPercentage
+            )[0]
+          : null;
 
       setBestHabit(newBestHabit);
       setWorstHabit(newWorstHabit);
@@ -109,23 +118,29 @@ const GoalAnalyser: React.FC<Props> = (props) => {
     getStatistics();
   }, [goals, activeHabit]);
 
-  if (!goal || !goalProgress || !bestHabit || !worstHabit) {
+  if (!goal || !goalProgress) {
     return null;
   }
 
   return (
     <Container>
       <Header>
-        <h1>{goal.title}</h1>
+        <h1>Overview da Meta:</h1>
+        <h2>{goal.title}</h2>
         <p>{goal.description}</p>
 
         <ProgressContainer>
-          <div>
-            Melhor hábito: <strong>{bestHabit.title}</strong>
-          </div>
-          <div>
-            Pior hábito: <strong>{worstHabit.title}</strong>
-          </div>
+          {bestHabit && (
+            <div>
+              Melhor hábito: <strong>{bestHabit.title}</strong>
+            </div>
+          )}
+
+          {worstHabit && (
+            <div>
+              Pior hábito: <strong>{worstHabit.title}</strong>
+            </div>
+          )}
 
           <label>Dias passados:</label>
           <ProgressBar progress={goalProgress.actualPercentage} />
@@ -138,7 +153,7 @@ const GoalAnalyser: React.FC<Props> = (props) => {
       <HabitsContainer>
         {goal.habits.map((habit, index) => (
           <div>
-            <h2 onClick={() => handleActiveGoal(index)}>{habit.title}</h2>
+            <h3 onClick={() => handleActiveGoal(index)}>{habit.title}</h3>
             <p>{habit.description}</p>
 
             <ProgressContainer>
