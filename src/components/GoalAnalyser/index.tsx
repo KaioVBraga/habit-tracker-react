@@ -24,6 +24,8 @@ const GoalAnalyser: React.FC<Props> = (props) => {
   const { activeHabit, goals } = useSelector((state: any) => state);
   const [goal, setGoal] = useState(null);
   const [goalProgress, setGoalProgress] = useState(null);
+  const [bestHabit, setBestHabit] = useState(null);
+  const [worstHabit, setWorstHabit] = useState(null);
 
   console.log("GOALS", goals);
   console.log("ACTIVE HABIT", activeHabit);
@@ -85,18 +87,26 @@ const GoalAnalyser: React.FC<Props> = (props) => {
         ) / habitsStatistics.length,
     };
 
-    console.log("NEW GOAL PROGRESS", newGoalProgress);
-
     setGoalProgress(newGoalProgress);
 
-    console.log("GOAAAL", newGoal);
+    const orderedHabits = [...newGoal.habits];
+
+    const newBestHabit = orderedHabits.sort(
+      (a, b) => b.statistics.totalPercentage - a.statistics.totalPercentage
+    )[0];
+    const newWorstHabit = orderedHabits.sort(
+      (a, b) => a.statistics.totalPercentage - b.statistics.totalPercentage
+    )[0];
+
+    setBestHabit(newBestHabit);
+    setWorstHabit(newWorstHabit);
   }, [goals, activeHabit]);
 
   useEffect(() => {
     getStatistics();
   }, [goals, activeHabit]);
 
-  if (!goal || !goalProgress) {
+  if (!goal || !goalProgress || !bestHabit || !worstHabit) {
     return null;
   }
 
@@ -107,6 +117,13 @@ const GoalAnalyser: React.FC<Props> = (props) => {
         <p>{goal.description}</p>
 
         <ProgressContainer>
+          <div>
+            Melhor hábito: <strong>{bestHabit.title}</strong>
+          </div>
+          <div>
+            Pior hábito: <strong>{worstHabit.title}</strong>
+          </div>
+
           <label>Dias passados:</label>
           <ProgressBar progress={goalProgress.actualPercentage} />
 
