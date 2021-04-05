@@ -9,7 +9,7 @@ import {
   ProgressContainer,
 } from "./styles";
 import api from "../../services/api";
-import { handleTimezone } from "../../services/utils";
+import { getUser, handleTimezone } from "../../services/utils";
 import swal from "sweetalert";
 import { useSelector, useDispatch } from "react-redux";
 import { changeActiveHabitState } from "../../redux/ducks/activeHabit";
@@ -45,61 +45,64 @@ const GoalAnalyser: React.FC<Props> = (props) => {
   );
 
   const getStatistics = useCallback(async () => {
-    console.log("ENTERED");
+    try {
+      console.log("ENTERED");
 
-    if (!goals.length) {
-      return;
+      if (!goals.length) {
+        return;
+      }
+
+      const user = getUser();
+
+      const habitsStatistics = await Promise.all(
+        goals[activeHabit.goalIndex].habits.map(async (habit) => {
+          return api
+            .get(
+              `/users/${user.id}/goals/${habit.goal_id}/habits/${habit.id}/statistics`
+            )
+            .then((res) => {
+              return res.data;
+            });
+        })
+      );
+
+      const newGoal = { ...goals[activeHabit.goalIndex] };
+
+      newGoal.habits = newGoal.habits.map((habit, index) => {
+        return { ...habit, statistics: habitsStatistics[index] };
+      });
+
+      setGoal(newGoal);
+
+      const newGoalProgress = {
+        actualPercentage:
+          habitsStatistics.reduce(
+            (sum, { actualPercentage }) => sum + actualPercentage,
+            0
+          ) / habitsStatistics.length,
+        totalPercentage:
+          habitsStatistics.reduce(
+            (sum, { totalPercentage }) => sum + totalPercentage,
+            0
+          ) / habitsStatistics.length,
+      };
+
+      setGoalProgress(newGoalProgress);
+
+      const orderedHabits = [...newGoal.habits];
+
+      const newBestHabit = orderedHabits.sort(
+        (a, b) => b.statistics.totalPercentage - a.statistics.totalPercentage
+      )[0];
+      const newWorstHabit = orderedHabits.sort(
+        (a, b) => a.statistics.totalPercentage - b.statistics.totalPercentage
+      )[0];
+
+      setBestHabit(newBestHabit);
+      setWorstHabit(newWorstHabit);
+    } catch (err) {
+      console.error("ERROR", err);
     }
-
-    const userString = localStorage.getItem("habit_user") || "";
-    const user = JSON.parse(userString);
-
-    const habitsStatistics = await Promise.all(
-      goals[activeHabit.goalIndex].habits.map(async (habit) => {
-        return api
-          .get(
-            `/users/${user.id}/goals/${habit.goal_id}/habits/${habit.id}/statistics`
-          )
-          .then((res) => {
-            return res.data;
-          });
-      })
-    );
-
-    const newGoal = { ...goals[activeHabit.goalIndex] };
-
-    newGoal.habits = newGoal.habits.map((habit, index) => {
-      return { ...habit, statistics: habitsStatistics[index] };
-    });
-
-    setGoal(newGoal);
-
-    const newGoalProgress = {
-      actualPercentage:
-        habitsStatistics.reduce(
-          (sum, { actualPercentage }) => sum + actualPercentage,
-          0
-        ) / habitsStatistics.length,
-      totalPercentage:
-        habitsStatistics.reduce(
-          (sum, { totalPercentage }) => sum + totalPercentage,
-          0
-        ) / habitsStatistics.length,
-    };
-
-    setGoalProgress(newGoalProgress);
-
-    const orderedHabits = [...newGoal.habits];
-
-    const newBestHabit = orderedHabits.sort(
-      (a, b) => b.statistics.totalPercentage - a.statistics.totalPercentage
-    )[0];
-    const newWorstHabit = orderedHabits.sort(
-      (a, b) => a.statistics.totalPercentage - b.statistics.totalPercentage
-    )[0];
-
-    setBestHabit(newBestHabit);
-    setWorstHabit(newWorstHabit);
   }, [goals, activeHabit]);
 
   useEffect(() => {

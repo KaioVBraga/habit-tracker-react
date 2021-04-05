@@ -5,24 +5,6 @@ export const Container = styled.div`
   position: relative;
   width: 100%;
 
-  & > header {
-    background-color: #8257e5;
-    color: white;
-    height: 7rem;
-    width: 100%;
-    padding-left: 2vw;
-    padding-right: 2vw;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-
-    & > h1 {
-      font-family: "Saira Semi Condensed";
-      font-size: 32px;
-    }
-  }
-
   & > div {
     display: flex;
     min-height: 100vh;

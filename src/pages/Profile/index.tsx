@@ -6,12 +6,12 @@ import Statistics from "../../components/Statistics";
 
 import { getUser } from "../../services/utils";
 import SideMenu from "../../components/SideMenu";
-import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import GoalAnalyser from "../../components/GoalAnalyser";
+import GeneralAnalyser from "../../components/GeneralAnalyser";
+import Navbar from "../../components/Navbar";
 
 const Profile: React.FC = () => {
-  const history = useHistory();
   const scrollTo = (className: string) => {
     const scrollY = window?.scrollY;
     const classRectTop =
@@ -25,29 +25,11 @@ const Profile: React.FC = () => {
     });
   };
 
-  const logout = () => {
-    localStorage.removeItem("habit_user");
-    window.location.href = "/";
-  };
-
-  const goToEditProfile = () => {
-    history.push("/profile/edit");
-  };
-
   const { activeHabit, goals } = useSelector((state: any) => state);
 
   return (
     <Container>
-      <header>
-        <h1>Habit Tracker</h1>
-        <ProfileButton>
-          Olá, {getUser().name} !
-          <div>
-            <div onClick={goToEditProfile}>Editar perfil</div>
-            <div onClick={logout}>Sair</div>
-          </div>
-        </ProfileButton>
-      </header>
+      <Navbar />
       <div>
         <SideMenu />
         {activeHabit.habitIndex > -1 ? (
@@ -61,8 +43,10 @@ const Profile: React.FC = () => {
               <Statistics className="statistics" />
             </div>
           </section>
-        ) : (
+        ) : activeHabit.goalIndex > -1 ? (
           <GoalAnalyser />
+        ) : (
+          <GeneralAnalyser />
         )}
       </div>
     </Container>
