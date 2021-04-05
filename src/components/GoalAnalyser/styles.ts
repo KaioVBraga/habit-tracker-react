@@ -12,7 +12,7 @@ export const Container = styled.div`
   flex-direction: column;
 
   & > * {
-    margin-bottom: 2rem;
+    margin-bottom: 7rem;
   }
 `;
 
@@ -32,6 +32,17 @@ export const HabitsContainer = styled.div`
   }
 
   & > * {
-    margin-bottom: 1rem;
+    margin-bottom: 5rem;
+  }
+`;
+
+export const ProgressContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 30rem;
+  margin-top: 1.5rem;
+
+  & > label:not(:first-child) {
+    margin-top: 1rem;
   }
 `;
