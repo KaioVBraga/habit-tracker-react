@@ -3,7 +3,7 @@ import { darken } from "polished";
 import { BsChevronLeft, BsChevronRight } from "react-icons/bs";
 
 export const Container = styled.div`
-  width: 100%;
+  width: 80vw;
   height: min-content;
 
   padding: 1rem 2rem;

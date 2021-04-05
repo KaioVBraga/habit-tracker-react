@@ -23,6 +23,7 @@ const GoalAnalyser: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
   const { activeHabit, goals } = useSelector((state: any) => state);
   const [goal, setGoal] = useState(null);
+  const [goalProgress, setGoalProgress] = useState(null);
 
   console.log("GOALS", goals);
   console.log("ACTIVE HABIT", activeHabit);
@@ -71,6 +72,23 @@ const GoalAnalyser: React.FC<Props> = (props) => {
 
     setGoal(newGoal);
 
+    const newGoalProgress = {
+      actualPercentage:
+        habitsStatistics.reduce(
+          (sum, { actualPercentage }) => sum + actualPercentage,
+          0
+        ) / habitsStatistics.length,
+      totalPercentage:
+        habitsStatistics.reduce(
+          (sum, { totalPercentage }) => sum + totalPercentage,
+          0
+        ) / habitsStatistics.length,
+    };
+
+    console.log("NEW GOAL PROGRESS", newGoalProgress);
+
+    setGoalProgress(newGoalProgress);
+
     console.log("GOAAAL", newGoal);
   }, [goals, activeHabit]);
 
@@ -78,7 +96,7 @@ const GoalAnalyser: React.FC<Props> = (props) => {
     getStatistics();
   }, [goals, activeHabit]);
 
-  if (!goal) {
+  if (!goal || !goalProgress) {
     return null;
   }
 
@@ -87,6 +105,14 @@ const GoalAnalyser: React.FC<Props> = (props) => {
       <Header>
         <h1>{goal.title}</h1>
         <p>{goal.description}</p>
+
+        <ProgressContainer>
+          <label>Dias passados:</label>
+          <ProgressBar progress={goalProgress.actualPercentage} />
+
+          <label>Dias totais:</label>
+          <ProgressBar progress={goalProgress.totalPercentage} />
+        </ProgressContainer>
       </Header>
 
       <HabitsContainer>
