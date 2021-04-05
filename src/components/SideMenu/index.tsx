@@ -34,6 +34,7 @@ const SideMenu: React.FC<Props> = (props) => {
 
   const goals = useSelector((state: any) => state.goals);
   const activeHabit = useSelector((state: any) => state.activeHabit);
+  const [showHabits, setShowHabits] = useState(true);
 
   useEffect(() => {
     console.log("DISPATCH");
@@ -49,13 +50,19 @@ const SideMenu: React.FC<Props> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleActiveGoal = useCallback((index: number) => {
-    const newActiveHabit = { goalIndex: index, habitIndex: -1 };
-    localStorage.setItem("habit_active", JSON.stringify(newActiveHabit));
-    dispatch(changeActiveHabitState(newActiveHabit));
+  const handleActiveGoal = useCallback(
+    (index: number) => {
+      const newShowHabits =
+        activeHabit.goalIndex === index ? !showHabits : true;
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      const newActiveHabit = { goalIndex: index, habitIndex: -1 };
+      localStorage.setItem("habit_active", JSON.stringify(newActiveHabit));
+      dispatch(changeActiveHabitState(newActiveHabit));
+      setShowHabits(newShowHabits);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [activeHabit]
+  );
 
   const handleActiveHabitIndex = useCallback(
     (indexGoal: number, indexHabit: number) => {
@@ -166,6 +173,7 @@ const SideMenu: React.FC<Props> = (props) => {
 
               <div>
                 {isGoalActive &&
+                  showHabits &&
                   goal?.habits.map((habit: any, indexHabit: number) => {
                     const isHabitActive =
                       activeHabit.goalIndex === indexGoal &&
