@@ -109,10 +109,10 @@ const GoalAnalyser: React.FC<Props> = (props) => {
 
           <ProgressContainer>
             <label>Dias passados:</label>
-            <ProgressBar progress={goal.statistics.actualPercentage} />
+            <ProgressBar progress={goal?.statistics?.actualPercentage || 0} />
 
             <label>Dias totais:</label>
-            <ProgressBar progress={goal.statistics.totalPercentage} />
+            <ProgressBar progress={goal?.statistics?.totalPercentage || 0} />
           </ProgressContainer>
         </GoalContainer>
       ))}
