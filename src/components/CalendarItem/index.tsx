@@ -41,6 +41,10 @@ const Calendar: React.FC<Props> = ({
 
   const isToday = cleanToday.brasil === cleanDate.brasil;
 
+  if (isToday) {
+    console.log("IN GOAL", inGoal);
+  }
+
   const isDeadend = !!deadends
     .map((deadend: any) => handleTimezone(new Date(deadend.limit)).brasil)
     .find((deadend: any) => {

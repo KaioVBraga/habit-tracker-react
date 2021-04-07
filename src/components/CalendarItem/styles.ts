@@ -29,8 +29,8 @@ export const CalendarItem = styled.div<CalendarItemProps>`
     }
 
     if (
-      (props.inGoal || (props.isToday && props.value !== 0)) &&
-      props.inFrequency
+      (props.inGoal && !props.isToday) ||
+      (props.inGoal && props.isToday && props.value !== 0 && props.inFrequency)
     ) {
       return `hsl(${(props.value || 0) * 120}, 51%, 61%)`;
     }

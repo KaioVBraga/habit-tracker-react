@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useEffect, useState, useCallback, FormEvent } from "react";
 import Popup from "reactjs-popup";
-// import Modal from 'react-modal';
+import Modal from "react-modal";
 import {
   Container,
   CalendarContainer,
@@ -44,8 +44,8 @@ const Calendar: React.FC<Props> = (props) => {
   const [deadends, setDeadends] = useState(null);
   const [habit, setHabit] = useState(null);
 
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [finished, setFinished] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [finished, setFinished] = useState("");
   // const [continueGoal, setContinueGoal] = [...useState('')];
 
   const { activeHabit, goals } = useSelector((state: any) => state);
@@ -295,14 +295,7 @@ const Calendar: React.FC<Props> = (props) => {
           {days.map((day, index) => {
             const cleanHabitDate = handleTimezone(new Date(habit.createdAt));
             const cleanDate = handleTimezone(new Date(day.date));
-            const todayDate = new Date();
-            todayDate.setHours(0, 0, 0, 0);
-
-            todayDate.setHours(
-              todayDate.getHours() + (3 - todayDate.getTimezoneOffset() / 60)
-            );
-
-            const cleanToday = handleTimezone(todayDate);
+            const cleanToday = handleTimezone(new Date());
 
             const isToday = cleanToday.brasil === cleanDate.brasil;
 
@@ -314,8 +307,15 @@ const Calendar: React.FC<Props> = (props) => {
 
             const inGoal =
               cleanHabitDate.date.valueOf() <= cleanDate.date.valueOf() &&
-              cleanDate.date.valueOf() < cleanToday.date.valueOf() &&
+              cleanDate.date.valueOf() <= cleanToday.date.valueOf() &&
               cleanDate.date.valueOf() <= lastDeadend.date.valueOf();
+
+            if (isToday) {
+              console.log("CLEAN HABIT DATE", cleanHabitDate);
+              console.log("CLEAN DATE", cleanDate);
+              console.log("CLEAN TODAY", cleanToday);
+              console.log("LAST DEADEND", lastDeadend);
+            }
 
             const isDeadend = !!deadends
               .map(
@@ -334,9 +334,12 @@ const Calendar: React.FC<Props> = (props) => {
                 deadends={deadends}
                 handleClosePopup={() => handleClosePopup(index, isDeadend)}
                 handleMarkationValueChange={handleMarkationValueChange}
-                handleDays={() =>
-                  handleDays(index, isToday, inGoal, inFrequency, 1, isDeadend)
-                }
+                handleDays={() => {
+                  if (isToday && inGoal && !day.value) {
+                    setIsModalOpen(true);
+                  }
+                  handleDays(index, isToday, inGoal, inFrequency, 1, isDeadend);
+                }}
                 inGoal={inGoal}
                 inFrequency={inFrequency}
                 markationValue={markationValue}
@@ -344,70 +347,66 @@ const Calendar: React.FC<Props> = (props) => {
             );
           })}
         </CalendarContainer>
-        {/* <Modal
-                    isOpen={isModalOpen}
-                    onRequestClose={() => setIsModalOpen(false)}
-                    style={{
-                        overlay: {
-                            backgroundColor: 'rgba(0,0,0,.87)'
-                        },
-                        content: {
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center'
-                        }
-                    }}
-                >
-                    <h1>Você finalizou seu desafio !</h1>
-                    <p style={{ marginTop: '10px' }}>Conseguiu atingir sua meta ?</p>
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={() => setIsModalOpen(false)}
+          style={{
+            overlay: {
+              backgroundColor: "rgba(0,0,0,.87)",
+            },
+            content: {
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            },
+          }}
+        >
+          <h1>Você finalizou seu desafio !</h1>
+          <p style={{ marginTop: "10px" }}>Conseguiu atingir sua meta ?</p>
 
-                    {
-                        finished === '' && <div
-                            style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                width: '400px',
-                                marginTop: '10px'
-                            }}
-                        >
-                            <button
-                                onClick={() => setFinished('yes')}
-                                style={{
-                                    marginRight: '10px'
-                                }}
-                            >
-                                Sim
-                            </button>
-                            <button
-                                onClick={() => setFinished('no')}
-                                style={{
-                                    marginRight: '10px'
-                                }}
-                            >
-                                Não
-                            </button>
-                        </div>
-                    }
+          {finished === "" && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "400px",
+                marginTop: "10px",
+              }}
+            >
+              <button
+                onClick={() => setFinished("yes")}
+                style={{
+                  marginRight: "10px",
+                }}
+              >
+                Sim
+              </button>
+              <button
+                onClick={() => setFinished("no")}
+                style={{
+                  marginRight: "10px",
+                }}
+              >
+                Não
+              </button>
+            </div>
+          )}
 
-                    {
-                        finished === 'yes' && <>
-                            <p>
-                                Parabéns, curta sua recompensa
-                            </p>
-                        </>
-                    }
+          {finished === "yes" && (
+            <>
+              <p>Parabéns, curta sua recompensa</p>
+            </>
+          )}
 
-                    {
-                        finished === 'no' && continueGoal === '' && <>
-                            <p>
-                                Deseja, prolongar sua meta ?
-                            </p>
+          {/* {finished === "no" && continueGoal === "" && (
+            <>
+              <p>Deseja, prolongar sua meta ?</p>
 
-                            <button onClick={() => setContinueGoal('yes')}>Sim</button>
-                            <button onClick={() => setContinueGoal('no')}>Não</button>
-                        </>
-                    }
-                </Modal> */}
+              <button onClick={() => setContinueGoal("yes")}>Sim</button>
+              <button onClick={() => setContinueGoal("no")}>Não</button>
+            </>
+          )} */}
+        </Modal>
       </section>
       <IconRight onClick={() => changeMonthNumber(1)} />
     </Container>
