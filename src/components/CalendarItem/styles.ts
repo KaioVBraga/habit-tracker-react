@@ -91,11 +91,11 @@ export const CalendarItem = styled.div<CalendarItemProps>`
 `;
 
 export const Tooltip = styled.div`
-  height: 100px;
-  width: 100px;
+  width: 150px;
   background-color: white;
   display: flex;
   flex-direction: column;
   border: 1px solid #cecece;
   padding: 5px;
+  font-size: 1.2rem;
 `;

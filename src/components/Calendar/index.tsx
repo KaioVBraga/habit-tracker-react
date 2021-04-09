@@ -174,8 +174,6 @@ const Calendar: React.FC<Props> = (props) => {
               }
             : { markation: 0 };
 
-        console.log("LOCALE DATE", localeDate);
-
         return {
           position,
           value: mark.markation,
@@ -208,10 +206,6 @@ const Calendar: React.FC<Props> = (props) => {
         .map((position: number) =>
           setPosition(position, monthSum(actualCalendar, 1) + 1, false)
         );
-
-      console.log("ACTUAL CALENDAR PREVIOUS", monthSum(actualCalendar, -1));
-      console.log("ACTUAL CALENDAR ACTUAL", monthSum(actualCalendar, 0));
-      console.log("ACTUAL CALENDAR NEXT", monthSum(actualCalendar, 1));
 
       const previousMonthStart = previousMonth.length - firstOfMonth;
       const previousMonthEnd = firstOfMonth % 7 && previousMonth.length;
@@ -331,6 +325,26 @@ const Calendar: React.FC<Props> = (props) => {
     [date]
   );
 
+  useEffect(() => {
+    if (!deadends || !deadends.length) {
+      return;
+    }
+
+    const lastDeadend = [...deadends].pop();
+
+    const cleanToday = handleTimezone(new Date());
+
+    const cleanLastDeadend = handleTimezone(new Date(lastDeadend.limit));
+
+    if (cleanToday.date.valueOf() < cleanLastDeadend.date.valueOf()) {
+      return;
+    }
+
+    if (lastDeadend.accomplished === null) {
+      setIsModalOpen(true);
+    }
+  }, [deadends]);
+
   if (!habit || !deadends) {
     return null;
   }
@@ -339,6 +353,7 @@ const Calendar: React.FC<Props> = (props) => {
     <Container className={props.className}>
       <IconLeft onClick={() => changeMonthNumber(-1)} />
       <section>
+        <h1>{habit.title}</h1>
         <h2>
           {months[monthNumber].name} {date.getFullYear()}
         </h2>
@@ -359,23 +374,20 @@ const Calendar: React.FC<Props> = (props) => {
 
             const isToday = cleanToday.brasil === cleanDate.brasil;
 
-            const lastDeadend = deadends
-              .map((deadend: any) => {
+            const lastDeadend = [...deadends]
+              ?.map((deadend: any) => {
                 return handleTimezone(new Date(deadend.limit));
               })
-              .pop();
+              ?.pop();
+
+            if (!lastDeadend) {
+              return null;
+            }
 
             const inGoal =
               cleanHabitDate.date.valueOf() <= cleanDate.date.valueOf() &&
               cleanDate.date.valueOf() <= cleanToday.date.valueOf() &&
               cleanDate.date.valueOf() <= lastDeadend.date.valueOf();
-
-            if (isToday) {
-              console.log("CLEAN HABIT DATE", cleanHabitDate);
-              console.log("CLEAN DATE", cleanDate);
-              console.log("CLEAN TODAY", cleanToday);
-              console.log("LAST DEADEND", lastDeadend);
-            }
 
             const isDeadend = !!deadends
               .map(
@@ -400,6 +412,9 @@ const Calendar: React.FC<Props> = (props) => {
                 inGoal={inGoal}
                 inFrequency={inFrequency}
                 markationValue={markationValue}
+                beforeDeadend={
+                  cleanDate.date.valueOf() <= lastDeadend.date.valueOf()
+                }
               />
             );
           })}

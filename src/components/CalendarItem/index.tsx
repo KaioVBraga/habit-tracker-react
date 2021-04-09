@@ -13,6 +13,7 @@ interface Props {
   handleMarkationValueChange: any;
   inFrequency: boolean;
   inGoal: boolean;
+  beforeDeadend: boolean;
   markationValue: any;
 }
 
@@ -25,6 +26,7 @@ const Calendar: React.FC<Props> = ({
   handleMarkationValueChange,
   inFrequency,
   inGoal,
+  beforeDeadend,
   markationValue,
 }) => {
   const cleanHabitDate = handleTimezone(new Date(habit.createdAt));
@@ -221,18 +223,150 @@ const Calendar: React.FC<Props> = ({
     );
   }
 
+  if (!inFrequency && day.inMonth) {
+    return (
+      <Popup
+        trigger={
+          <CalendarItem
+            value={day.value}
+            inMonth={day.inMonth}
+            isToday={isToday}
+            isDeadend={isDeadend}
+            inGoal={inGoal}
+            inFrequency={inFrequency}
+            onClick={handleDays}
+          >
+            {day.position}
+          </CalendarItem>
+        }
+        on={["hover"]}
+        position={"top center"}
+      >
+        <Tooltip>Dia fora da frequência de realização do hábito</Tooltip>
+      </Popup>
+    );
+  }
+
+  if (day.value !== 0) {
+    return (
+      <Popup
+        trigger={
+          <CalendarItem
+            value={day.value}
+            inMonth={day.inMonth}
+            isToday={isToday}
+            isDeadend={isDeadend}
+            inGoal={inGoal}
+            inFrequency={inFrequency}
+            onClick={handleDays}
+          >
+            {day.position}
+          </CalendarItem>
+        }
+        on={["hover"]}
+        position={"top center"}
+      >
+        <Tooltip>
+          {parseInt(day.value * 100)}% do hábito foi executado no dia
+        </Tooltip>
+      </Popup>
+    );
+  }
+
+  if (inGoal && !isToday) {
+    return (
+      <Popup
+        trigger={
+          <CalendarItem
+            value={day.value}
+            inMonth={day.inMonth}
+            isToday={isToday}
+            isDeadend={isDeadend}
+            inGoal={inGoal}
+            inFrequency={inFrequency}
+            onClick={handleDays}
+          >
+            {day.position}
+          </CalendarItem>
+        }
+        on={["hover"]}
+        position={"top center"}
+      >
+        <Tooltip>Hábito não realizado</Tooltip>
+      </Popup>
+    );
+  }
+
+  if (isDeadend) {
+    return (
+      <Popup
+        trigger={
+          <CalendarItem
+            value={day.value}
+            inMonth={day.inMonth}
+            isToday={isToday}
+            isDeadend={isDeadend}
+            inGoal={inGoal}
+            inFrequency={inFrequency}
+            onClick={handleDays}
+          >
+            {day.position}
+          </CalendarItem>
+        }
+        on={["hover"]}
+        position={"top center"}
+      >
+        <Tooltip>Data limite</Tooltip>
+      </Popup>
+    );
+  }
+
+  if (beforeDeadend) {
+    return (
+      <Popup
+        trigger={
+          <CalendarItem
+            value={day.value}
+            inMonth={day.inMonth}
+            isToday={isToday}
+            isDeadend={isDeadend}
+            inGoal={inGoal}
+            inFrequency={inFrequency}
+            onClick={handleDays}
+          >
+            {day.position}
+          </CalendarItem>
+        }
+        on={["hover"]}
+        position={"top center"}
+      >
+        <Tooltip>
+          Dia que faz parte do escopo do hábito, mas que não foi atingido
+        </Tooltip>
+      </Popup>
+    );
+  }
+
   return (
-    <CalendarItem
-      value={day.value}
-      inMonth={day.inMonth}
-      isToday={isToday}
-      isDeadend={isDeadend}
-      inGoal={inGoal}
-      inFrequency={inFrequency}
-      onClick={handleDays}
+    <Popup
+      trigger={
+        <CalendarItem
+          value={day.value}
+          inMonth={day.inMonth}
+          isToday={isToday}
+          isDeadend={isDeadend}
+          inGoal={inGoal}
+          inFrequency={inFrequency}
+          onClick={handleDays}
+        >
+          {day.position}
+        </CalendarItem>
+      }
+      on={["hover"]}
+      position={"top center"}
     >
-      {day.position}
-    </CalendarItem>
+      <Tooltip>Dia fora do escopo do hábito</Tooltip>
+    </Popup>
   );
 };
 

@@ -2,7 +2,16 @@ import React, { useState, useCallback, FormEvent } from "react";
 import Input from "../Input";
 import Textarea from "../Textarea";
 import Frequency from "../Frequency";
-import { Container, PlusIcon } from "./styles";
+import Switch from "react-switch";
+import Popup from "reactjs-popup";
+import {
+  Container,
+  PlusIcon,
+  BaseContainer,
+  QuantitativeContainer,
+  MarkableLabel,
+  Tooltip,
+} from "./styles";
 import { useSelector } from "react-redux";
 import * as Yup from "yup";
 import swal from "sweetalert";
@@ -86,8 +95,7 @@ const HabitsRegister: React.FC<Props> = (props) => {
   );
 
   const handleHabitsCheckChange = useCallback(
-    (e: FormEvent, index: number) => {
-      const { name } = e.target as HTMLInputElement;
+    (name: string, index: number) => {
       const newHabits = [...habits];
 
       newHabits[index][name] = newHabits[index][name] === 1 ? 0 : 1;
@@ -195,23 +203,52 @@ const HabitsRegister: React.FC<Props> = (props) => {
               onChange={(e) => handleHabitsTextAreaChange(e, indexI)}
             />
 
-            <label>Quantitativo</label>
-            <input
-              type="checkbox"
-              name="qualitative"
-              checked={habit.qualitative !== 1}
-              onChange={(e) => handleHabitsCheckChange(e, indexI)}
-            />
+            <QuantitativeContainer>
+              <Popup
+                trigger={
+                  <MarkableLabel checked={habit.qualitative === 1}>
+                    Qualitativo
+                  </MarkableLabel>
+                }
+                on={["hover"]}
+                position={"top center"}
+              >
+                <Tooltip>
+                  Hábitos que são binários, feito ou não feito. Ex: "Levar o
+                  cachorro para passear"
+                </Tooltip>
+              </Popup>
+              <Switch
+                name="qualitative"
+                checked={habit.qualitative !== 1}
+                onChange={() => handleHabitsCheckChange("qualitative", indexI)}
+              />
+              <Popup
+                trigger={
+                  <MarkableLabel checked={habit.qualitative !== 1}>
+                    Quantitativo
+                  </MarkableLabel>
+                }
+                on={["hover"]}
+                position={"top center"}
+              >
+                <Tooltip>
+                  Hábitos que não são binários, podem variar entre 0 a uma
+                  "base". Ex: "Fazer 20 exercícios de matermática" (20 seria a
+                  base)
+                </Tooltip>
+              </Popup>
+            </QuantitativeContainer>
 
             {habit.qualitative !== 1 && (
-              <>
+              <BaseContainer>
                 <label>Base</label>
                 <input
                   name="base"
                   value={habit.base}
                   onChange={(e) => handleHabitsInputChange(e, indexI)}
                 />
-              </>
+              </BaseContainer>
             )}
 
             <Frequency

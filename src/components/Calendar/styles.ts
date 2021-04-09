@@ -10,6 +10,12 @@ export const Container = styled.div`
   justify-content: center;
 
   & > section {
+    & h1 {
+      text-align: center;
+      font-size: 3rem;
+      margin-bottom: 2.5rem;
+    }
+
     & > h2 {
       text-align: center;
       margin-bottom: 2.5rem;

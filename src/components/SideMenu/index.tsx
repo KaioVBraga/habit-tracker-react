@@ -11,7 +11,7 @@ import {
   SetupContainer,
 } from "./styles";
 
-import { BsPlusCircle, BsXCircle, BsExclamationCircle } from "react-icons/bs";
+import { BsPlusCircle, BsTrashFill, BsPencilSquare } from "react-icons/bs";
 import { useSelector, useDispatch } from "react-redux";
 import { changeGoals } from "../../redux/ducks/goals";
 import { changeActiveHabitState } from "../../redux/ducks/activeHabit";
@@ -163,10 +163,10 @@ const SideMenu: React.FC<Props> = (props) => {
                       setIsModalEditorOpen(true);
                     }}
                   >
-                    <BsExclamationCircle />
+                    <BsPencilSquare />
                   </EditButton>
                   <CloseButton onClick={() => deleteGoal(indexGoal)}>
-                    <BsXCircle />
+                    <BsTrashFill />
                   </CloseButton>
                 </SetupContainer>
               </span>
@@ -201,12 +201,12 @@ const SideMenu: React.FC<Props> = (props) => {
                               setIsModalEditorOpen(true);
                             }}
                           >
-                            <BsExclamationCircle />
+                            <BsPencilSquare />
                           </EditButton>
                           <CloseButton
                             onClick={() => deleteHabit(indexGoal, indexHabit)}
                           >
-                            <BsXCircle />
+                            <BsTrashFill />
                           </CloseButton>
                         </SetupContainer>
                       </HabitItem>

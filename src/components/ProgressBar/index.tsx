@@ -8,10 +8,9 @@ interface Props {
 
 const Progress: React.FC<Props> = ({ progress }) => {
   return (
-    <Container>
-      <ProgressBar progress={progress}>
-        <span>{progress >= 100 ? 100 : progress.toFixed(2)}%</span>
-      </ProgressBar>
+    <Container progress={progress}>
+      <ProgressBar progress={progress} />
+      <span>{progress >= 100 ? 100 : progress.toFixed(2)}%</span>
     </Container>
   );
 };
