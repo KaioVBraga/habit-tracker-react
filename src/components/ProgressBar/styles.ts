@@ -30,7 +30,6 @@ export const ProgressBar = styled.div<ProgressProps>`
   background-color: ${(props) => (props.progress < 100 ? "#888" : "#6adb84")};
   width: ${(props) => `${props.progress}%`};
   height: 2.5rem;
-  padding: 0.15rem 1rem;
   border-radius: 5px;
   display: flex;
   justify-content: flex-end;
