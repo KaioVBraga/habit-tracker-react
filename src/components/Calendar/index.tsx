@@ -260,14 +260,32 @@ const Calendar: React.FC<Props> = (props) => {
             `/users/${user.id}/goals/${habit.goal_id}/habits/${habit.id}/marks`,
             { markation }
           )
-          .then(() => {
+          .then((res) => {
             swal(
               "Parabéns",
               `Aproveite sua recompensa da prática do seu hábito: ${habit.reward}`,
               "success"
             );
+
+            const newMarks = [...habit.marks];
+
             newDays[index].value = markation;
             setDays(newDays);
+            setHabit((habit) => ({
+              ...habit,
+              marks: [...newMarks, res.data],
+            }));
+
+            const goalIndex = activeHabit?.goalIndex;
+            const habitIndex = activeHabit?.habitIndex;
+
+            if (goals.length && goalIndex !== null && habitIndex !== null) {
+              const newGoals = [...goals];
+
+              newGoals[goalIndex].habits[habitIndex].marks.push(res.data);
+
+              dispatch(changeGoals(newGoals));
+            }
 
             if (isToday && inGoal && isDeadend) {
               setIsModalOpen(true);
@@ -283,7 +301,7 @@ const Calendar: React.FC<Props> = (props) => {
           });
       }
     },
-    [days, habit]
+    [days, habit, activeHabit]
   );
 
   const handleMarkationValueChange = useCallback(
