@@ -327,7 +327,11 @@ const Calendar: React.FC<Props> = (props) => {
 
   const handleClosePopup = useCallback(
     (index: number, isDeadend) => {
-      handleDays(index, true, true, markationValue, isDeadend);
+      console.log("CLOSED POPUP");
+
+      console.log("MARKATION VALUE", markationValue);
+
+      handleDays(index, true, true, true, markationValue, isDeadend);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
     [handleDays, markationValue]
