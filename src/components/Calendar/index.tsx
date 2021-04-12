@@ -218,6 +218,10 @@ const Calendar: React.FC<Props> = (props) => {
             );
             newDays[index].value = markation;
             setDays(newDays);
+
+            if (isToday && inGoal && isDeadend) {
+              setIsModalOpen(true);
+            }
           })
           .catch((err) => {
             console.error(err);
@@ -335,9 +339,6 @@ const Calendar: React.FC<Props> = (props) => {
                 handleClosePopup={() => handleClosePopup(index, isDeadend)}
                 handleMarkationValueChange={handleMarkationValueChange}
                 handleDays={() => {
-                  if (isToday && inGoal && !day.value) {
-                    setIsModalOpen(true);
-                  }
                   handleDays(index, isToday, inGoal, inFrequency, 1, isDeadend);
                 }}
                 inGoal={inGoal}

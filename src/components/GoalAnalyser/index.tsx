@@ -72,6 +72,21 @@ const GoalAnalyser: React.FC<Props> = (props) => {
         return { ...habit, statistics: habitsStatistics[index] };
       });
 
+      console.log("GOAL", newGoal);
+
+      const deadends = newGoal.deadends.map((deadend: any) =>
+        handleTimezone(new Date(deadend.limit))
+      );
+
+      const lastDeadend = deadends.sort(
+        (a, b) => b.date.valueOf() - a.date.valueOf()
+      )[0];
+
+      const cleanToday = handleTimezone(new Date());
+
+      newGoal.finished =
+        cleanToday.date.valueOf() >= lastDeadend.date.valueOf();
+
       setGoal(newGoal);
 
       const newGoalProgress = {
@@ -125,7 +140,9 @@ const GoalAnalyser: React.FC<Props> = (props) => {
   return (
     <Container>
       <Header>
-        <h1>Overview da Meta:</h1>
+        <h1>
+          Overview da Meta [{goal.finished ? "FINALIZADA" : "ANDAMENTO"}]:
+        </h1>
         <h2>{goal.title}</h2>
         <p>{goal.description}</p>
 
@@ -141,9 +158,12 @@ const GoalAnalyser: React.FC<Props> = (props) => {
               Pior hábito: <strong>{worstHabit.title}</strong>
             </div>
           )}
-
-          <label>Dias passados:</label>
-          <ProgressBar progress={goalProgress?.actualPercentage || 0} />
+          {!goal.finished ? (
+            <>
+              <label>Dias passados:</label>
+              <ProgressBar progress={goalProgress?.actualPercentage || 0} />
+            </>
+          ) : null}
 
           <label>Dias totais:</label>
           <ProgressBar progress={goalProgress?.totalPercentage || 0} />
@@ -157,10 +177,14 @@ const GoalAnalyser: React.FC<Props> = (props) => {
             <p>{habit.description}</p>
 
             <ProgressContainer>
-              <label>Dias passados:</label>
-              <ProgressBar
-                progress={habit?.statistics?.actualPercentage || 0}
-              />
+              {!goal.finished ? (
+                <>
+                  <label>Dias passados:</label>
+                  <ProgressBar
+                    progress={habit?.statistics?.actualPercentage || 0}
+                  />
+                </>
+              ) : null}
 
               <label>Dias totais:</label>
               <ProgressBar progress={habit?.statistics?.totalPercentage || 0} />
