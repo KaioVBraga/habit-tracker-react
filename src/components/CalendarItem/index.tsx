@@ -12,6 +12,7 @@ interface Props {
   handleClosePopup: any;
   handleMarkationValueChange: any;
   inFrequency: boolean;
+  inGoal: boolean;
   markationValue: any;
 }
 
@@ -23,17 +24,22 @@ const Calendar: React.FC<Props> = ({
   handleClosePopup,
   handleMarkationValueChange,
   inFrequency,
+  inGoal,
   markationValue,
 }) => {
   const cleanHabitDate = handleTimezone(new Date(habit.createdAt));
   const cleanDate = handleTimezone(new Date(day.date));
-  const cleanToday = handleTimezone(new Date());
+
+  const todayDate = new Date();
+  todayDate.setHours(0, 0, 0, 0);
+
+  todayDate.setHours(
+    todayDate.getHours() + (3 - todayDate.getTimezoneOffset() / 60)
+  );
+
+  const cleanToday = handleTimezone(todayDate);
 
   const isToday = cleanToday.brasil === cleanDate.brasil;
-
-  const inGoal =
-    cleanHabitDate.date.valueOf() <= cleanDate.date.valueOf() &&
-    cleanDate.date.valueOf() < cleanToday.date.valueOf();
 
   const isDeadend = !!deadends
     .map((deadend: any) => handleTimezone(new Date(deadend.limit)).brasil)
@@ -41,7 +47,7 @@ const Calendar: React.FC<Props> = ({
       return deadend === cleanDate.brasil;
     });
 
-  if (isToday && habit.qualitative !== 1) {
+  if (isToday && inGoal && habit.qualitative !== 1) {
     return (
       <Popup
         trigger={
@@ -93,7 +99,7 @@ const Calendar: React.FC<Props> = ({
     );
   }
 
-  if (isToday && !day.value) {
+  if (isToday && inGoal && !day.value) {
     if (habit.qualitative !== 1) {
       return (
         <Popup
@@ -146,7 +152,7 @@ const Calendar: React.FC<Props> = ({
       );
     }
 
-    if (isToday && habit.qualitative !== 1) {
+    if (isToday && inGoal && habit.qualitative !== 1) {
       return (
         <Popup
           trigger={

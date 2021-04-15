@@ -182,6 +182,7 @@ const Calendar: React.FC<Props> = (props) => {
     (
       index: number,
       isToday: boolean,
+      inGoal: boolean,
       inFrequency: boolean,
       markation: number,
       isDeadend: boolean
@@ -192,7 +193,12 @@ const Calendar: React.FC<Props> = (props) => {
       //     setIsModalOpen(true);
       // }
 
-      if (isToday && inFrequency && newDays[index].value !== markation) {
+      if (
+        isToday &&
+        inGoal &&
+        inFrequency &&
+        newDays[index].value !== markation
+      ) {
         const userString = localStorage.getItem("habit_user") || "";
         const user = JSON.parse(userString);
 
@@ -289,13 +295,27 @@ const Calendar: React.FC<Props> = (props) => {
           {days.map((day, index) => {
             const cleanHabitDate = handleTimezone(new Date(habit.createdAt));
             const cleanDate = handleTimezone(new Date(day.date));
-            const cleanToday = handleTimezone(new Date());
+            const todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
+
+            todayDate.setHours(
+              todayDate.getHours() + (3 - todayDate.getTimezoneOffset() / 60)
+            );
+
+            const cleanToday = handleTimezone(todayDate);
 
             const isToday = cleanToday.brasil === cleanDate.brasil;
 
+            const lastDeadend = deadends
+              .map((deadend: any) => {
+                return handleTimezone(new Date(deadend.limit));
+              })
+              .pop();
+
             const inGoal =
               cleanHabitDate.date.valueOf() <= cleanDate.date.valueOf() &&
-              cleanDate.date.valueOf() < cleanToday.date.valueOf();
+              cleanDate.date.valueOf() < cleanToday.date.valueOf() &&
+              cleanDate.date.valueOf() <= lastDeadend.date.valueOf();
 
             const isDeadend = !!deadends
               .map(
@@ -315,8 +335,9 @@ const Calendar: React.FC<Props> = (props) => {
                 handleClosePopup={() => handleClosePopup(index, isDeadend)}
                 handleMarkationValueChange={handleMarkationValueChange}
                 handleDays={() =>
-                  handleDays(index, isToday, inFrequency, 1, isDeadend)
+                  handleDays(index, isToday, inGoal, inFrequency, 1, isDeadend)
                 }
+                inGoal={inGoal}
                 inFrequency={inFrequency}
                 markationValue={markationValue}
               />

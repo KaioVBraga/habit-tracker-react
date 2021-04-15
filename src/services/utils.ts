@@ -4,8 +4,13 @@ export const getUser = () => {
   return user;
 };
 
-export const handleTimezone = (inDate: any) => {
+export const handleTimezone = (inDate: any, actualTime = false) => {
   const date = new Date(inDate);
+
+  if (!actualTime) {
+    date.setHours(0, 0, 0, 0);
+    date.setHours(date.getHours() + (3 - date.getTimezoneOffset() / 60));
+  }
 
   const dateResponse = date.toLocaleDateString("pt-br", {
     timeZone: "America/Sao_Paulo",

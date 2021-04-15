@@ -47,7 +47,7 @@ export const CalendarItem = styled.div<CalendarItemProps>`
     //   return "#ce6868";
     // }
 
-    if (props.isToday) {
+    if (props.isToday && props.inGoal) {
       return "#6868ce";
     }
 
@@ -62,7 +62,7 @@ export const CalendarItem = styled.div<CalendarItemProps>`
       return "#cacaca";
     }
 
-    if (props.isToday || props.inGoal || props.isDeadend) {
+    if (props.inGoal || props.isDeadend) {
       return "#ffffff";
     }
 
@@ -71,7 +71,7 @@ export const CalendarItem = styled.div<CalendarItemProps>`
     }
   }};
   cursor: ${(props) =>
-    props.isToday && props.inFrequency && props.value === 0
+    props.isToday && props.inGoal && props.inFrequency && props.value === 0
       ? "pointer"
       : "default"};
   transition: all 0.15s ease-in-out;
@@ -83,6 +83,7 @@ export const CalendarItem = styled.div<CalendarItemProps>`
   &:hover {
     background-color: ${(props) =>
       props.isToday &&
+      props.inGoal &&
       props.inFrequency &&
       props.value === 0 &&
       darken("0.05", "#6868ce")};
