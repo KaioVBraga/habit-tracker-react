@@ -74,18 +74,22 @@ const GoalAnalyser: React.FC<Props> = (props) => {
 
       console.log("GOAL", newGoal);
 
-      const deadends = newGoal.deadends.map((deadend: any) =>
-        handleTimezone(new Date(deadend.limit))
-      );
+      const deadends = newGoal.deadends.map((deadend: any) => ({
+        ...deadend,
+        dateTimezone: handleTimezone(new Date(deadend.limit)),
+      }));
 
       const lastDeadend = deadends.sort(
-        (a, b) => b.date.valueOf() - a.date.valueOf()
+        (a, b) => b.dateTimezone.date.valueOf() - a.dateTimezone.date.valueOf()
       )[0];
 
       const cleanToday = handleTimezone(new Date());
 
       newGoal.finished =
-        cleanToday.date.valueOf() >= lastDeadend.date.valueOf();
+        cleanToday.date.valueOf() >= lastDeadend.dateTimezone.date.valueOf();
+      newGoal.accomplished = !!lastDeadend.accomplished;
+
+      console.log("last deadend", lastDeadend);
 
       setGoal(newGoal);
 
@@ -141,7 +145,10 @@ const GoalAnalyser: React.FC<Props> = (props) => {
     <Container>
       <Header>
         <h1>
-          Overview da Meta [{goal.finished ? "FINALIZADA" : "ANDAMENTO"}]:
+          Overview da Meta [{goal.finished ? "FINALIZADA" : "ANDAMENTO"}]
+          {goal.finished &&
+            (goal.accomplished ? "[CONCLUÍDA]" : "[NÃO CONCLUÍDA]")}
+          :
         </h1>
         <h2>{goal.title}</h2>
         <p>{goal.description}</p>

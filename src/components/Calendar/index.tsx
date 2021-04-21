@@ -10,12 +10,14 @@ import {
   Tooltip,
 } from "./styles";
 import api from "../../services/api";
-import { handleTimezone } from "../../services/utils";
+import { getUser, handleTimezone } from "../../services/utils";
 import swal from "sweetalert";
 import { useSelector, useDispatch } from "react-redux";
 import { changeActiveHabitState } from "../../redux/ducks/activeHabit";
+import { changeGoals } from "../../redux/ducks/goals";
 
 import CalendarItem from "../CalendarItem";
+import Deadend from "../Deadend";
 
 interface Props {
   className?: string;
@@ -44,11 +46,28 @@ const Calendar: React.FC<Props> = (props) => {
   const [deadends, setDeadends] = useState(null);
   const [habit, setHabit] = useState(null);
 
+  const [newDeadend, setNewDeadend] = useState(null);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [finished, setFinished] = useState("");
-  // const [continueGoal, setContinueGoal] = [...useState('')];
+  const [continueGoal, setContinueGoal] = [...useState("")];
 
   const { activeHabit, goals } = useSelector((state: any) => state);
+
+  const finishGoal = useCallback(
+    (finished) => {
+      const goal = goals[activeHabit?.goalIndex || 0];
+
+      api
+        .put(`/goals/${goal.id}/finish`, {
+          accomplished: finished === "yes" ? 1 : 0,
+        })
+        .then((res) => {
+          setIsModalOpen(false);
+        });
+    },
+    [activeHabit, goals]
+  );
 
   const monthSum = (someDate: Date, value: number) => {
     const newDate = new Date(someDate);
@@ -58,6 +77,43 @@ const Calendar: React.FC<Props> = (props) => {
 
     return (12 + opMonth + (value % 12)) % 12;
   };
+
+  const handleDeadendChange = (e: FormEvent) => {
+    const { value } = e.target as HTMLInputElement;
+    setNewDeadend(value);
+  };
+
+  const continueGoalCallback = useCallback(() => {
+    if (!newDeadend) {
+      return;
+    }
+
+    const goal = goals[activeHabit?.goalIndex || 0];
+
+    const userString = localStorage.getItem("habit_user") || "";
+    const user = JSON.parse(userString);
+
+    const gambiarraDate = handleTimezone(newDeadend).date;
+
+    gambiarraDate.setDate(gambiarraDate.getDate() + 1);
+
+    api
+      .post(`/users/${user.id}/goals/${goal.id}/deadends`, {
+        accomplished: null,
+        limit: gambiarraDate.toISOString(),
+      })
+      .then((res) => {
+        api
+          .get(`users/${getUser().id}`)
+          .then((res) => {
+            dispatch(changeGoals(res.data.goals));
+            setIsModalOpen(false);
+          })
+          .catch((err) => {
+            setIsModalOpen(false);
+          });
+      });
+  }, [activeHabit, goals, newDeadend]);
 
   useEffect(() => {
     try {
@@ -362,51 +418,84 @@ const Calendar: React.FC<Props> = (props) => {
             },
           }}
         >
-          <h1>Você finalizou seu desafio !</h1>
-          <p style={{ marginTop: "10px" }}>Conseguiu atingir sua meta ?</p>
-
-          {finished === "" && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                width: "400px",
-                marginTop: "10px",
-              }}
-            >
-              <button
-                onClick={() => setFinished("yes")}
+          {finished === "" && continueGoal === "" && (
+            <>
+              <h1>Você finalizou seu desafio !</h1>
+              <p style={{ marginTop: "10px" }}>Conseguiu atingir sua meta ?</p>
+              <div
                 style={{
-                  marginRight: "10px",
+                  display: "flex",
+                  justifyContent: "center",
+                  width: "400px",
+                  marginTop: "10px",
                 }}
               >
-                Sim
-              </button>
-              <button
-                onClick={() => setFinished("no")}
-                style={{
-                  marginRight: "10px",
-                }}
-              >
-                Não
-              </button>
-            </div>
+                <button
+                  onClick={() => finishGoal("yes")}
+                  style={{
+                    marginRight: "10px",
+                  }}
+                >
+                  Sim
+                </button>
+                <button
+                  onClick={() => setFinished("no")}
+                  style={{
+                    marginRight: "10px",
+                  }}
+                >
+                  Não
+                </button>
+              </div>
+            </>
           )}
 
-          {finished === "yes" && (
+          {finished === "yes" && continueGoal === "" && (
             <>
               <p>Parabéns, curta sua recompensa</p>
             </>
           )}
 
-          {/* {finished === "no" && continueGoal === "" && (
+          {finished === "no" && continueGoal === "" && (
             <>
               <p>Deseja, prolongar sua meta ?</p>
 
-              <button onClick={() => setContinueGoal("yes")}>Sim</button>
-              <button onClick={() => setContinueGoal("no")}>Não</button>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  width: "400px",
+                  marginTop: "10px",
+                }}
+              >
+                <button
+                  onClick={() => setContinueGoal("yes")}
+                  style={{
+                    marginRight: "10px",
+                  }}
+                >
+                  Sim
+                </button>
+                <button
+                  onClick={() => finishGoal("no")}
+                  style={{
+                    marginRight: "10px",
+                  }}
+                >
+                  Não
+                </button>
+              </div>
             </>
-          )} */}
+          )}
+
+          {finished === "no" && continueGoal === "yes" && (
+            <>
+              <p>Escolha uma nova data de limite</p>
+
+              <Deadend value={newDeadend} onChange={handleDeadendChange} />
+              <button onClick={continueGoalCallback}>Enviar</button>
+            </>
+          )}
         </Modal>
       </section>
       <IconRight onClick={() => changeMonthNumber(1)} />
